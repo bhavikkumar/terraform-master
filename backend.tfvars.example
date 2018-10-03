@@ -1,0 +1,6 @@
+bucket          = "<Terraform S3 State Bucket Name>"
+region          = "<AWS Region>"
+dynamodb_table  = "<Terraform DynamoDB Lock Table>"
+kms_key_id      = "<Terraform KMS Key ARN>"
+profile         = "<The AWS profile name as set in the credentials file>"
+role_arn        = "<The ARN of the Role to assume>"

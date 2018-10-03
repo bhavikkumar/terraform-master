@@ -1,0 +1,25 @@
+---
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'Template to initalise the master account for terraform'
+Resources:
+  User:
+    Type: 'AWS::IAM::User'
+    Properties:
+      ManagedPolicyArns:
+        - 'arn:aws:iam::aws:policy/AdministratorAccess'
+
+  Credentials:
+    Type: 'AWS::IAM::AccessKey'
+    Properties:
+      UserName: !Ref User
+
+Outputs:
+  TerraformUserName:
+    Description: 'Name of the terraform user'
+    Value: !Ref User
+  TerraformUserAccessKey:
+    Description: 'The access key for the terraform user'
+    Value: !Ref Credentials
+  TerraformUserSecretAccessKey:
+    Description: 'The secret access key for terraform user'
+    Value: !GetAtt Credentials.SecretAccessKey
