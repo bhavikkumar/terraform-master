@@ -5,6 +5,7 @@ This terraform project initialises a account to become the root account of an AW
 ** It is important to note that the resources may not be created in the order listed here **
 
 ### Master Account
+  - [X] Enable strict password policy
   - [x] Enable AWS Organisations
   - [x] Create an operations account
   - [x] Enable CloudTrail Logging
@@ -32,6 +33,7 @@ This terraform project initialises a account to become the root account of an AW
   * Turn duplicate code blocks into modules
     * Creation of AWS Account
     * Creation of Roles
+    * Creation of CloudTrail
   * Refactor data blocks and policies to reduce duplication
   * When Terraform supports it
     * Automate enabling service control policies
