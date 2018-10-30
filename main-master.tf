@@ -1,6 +1,7 @@
 provider "aws" {
   region = "${var.aws_default_region}"
   version = "~> 1.38"
+  skip_credentials_validation = true
 }
 
 provider "aws" {
@@ -128,32 +129,6 @@ resource "aws_iam_group_policy" "mfa_finance" {
 resource "aws_iam_group_policy_attachment" "billing_attach" {
   group  = "${aws_iam_group.finance.id}"
   policy_arn = "${var.billing_default_arn}"
-  provider = "aws.master"
-}
-
-// Allow admins to assume read only role in the master account
-resource "aws_iam_role" "master_read_only_role" {
-  name = "ReadOnly"
-  assume_role_policy = "${data.aws_iam_policy_document.master_assume_role.json}"
-  provider = "aws.master"
-}
-
-resource "aws_iam_role_policy_attachment" "master_read_only_role" {
-  role = "${aws_iam_role.master_read_only_role.name}"
-  policy_arn = "${var.read_only_default_arn}"
-  provider = "aws.master"
-}
-
-// Allow security auditors to assume the security audit role in the master account
-resource "aws_iam_role" "master_security_audit_role" {
-  name = "SecurityAudit"
-  assume_role_policy = "${data.aws_iam_policy_document.master_assume_role.json}"
-  provider = "aws.master"
-}
-
-resource "aws_iam_role_policy_attachment" "master_security_audit_role" {
-  role = "${aws_iam_role.master_security_audit_role.name}"
-  policy_arn = "${var.auditor_default_arn}"
   provider = "aws.master"
 }
 

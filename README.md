@@ -5,7 +5,7 @@ This terraform project initialises a account to become the root account of an AW
 ** It is important to note that the resources may not be created in the order listed here **
 
 ### Master Account
-  - [X] Enable strict password policy
+  - [x] Enable strict password policy
   - [x] Enable AWS Organisations
   - [x] Create an operations account
   - [x] Enable CloudTrail Logging
@@ -82,7 +82,5 @@ terraform {
   * Click `Attach` for all of the accounts listed
 
 ## User Terraform Setup
-Once the state has been stored in S3, there is no reason to run all the initialisation steps again. Users only have to run the following:
- * `terraform init "-backend-config=backend.tfvars"` to initalise their local environment.
-
-Any modifications can be made directly to terraform code and committed to source control.
+Once the state has been stored in S3, users have to run the following command if they are setting up their local environment or if you ever set or change modules or backend configuration for Terraform.
+ * `terraform init "-backend-config=backend.tfvars"`

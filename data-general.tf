@@ -106,7 +106,6 @@ data "aws_iam_policy_document" "admin_group" {
     ]
     resources = [
       "arn:aws:iam::*:role/Admin",
-      "arn:aws:iam::*:role/ReadOnly"
     ]
   }
 }
@@ -134,24 +133,5 @@ data "aws_iam_policy_document" "security_audit_group" {
     resources = [
       "arn:aws:iam::*:role/SecurityAudit"
     ]
-  }
-}
-
-data "aws_iam_policy_document" "master_assume_role" {
-  statement {
-    sid = "AllowUsersInMasterAccountToAssumeRole"
-    effect = "Allow"
-    actions = [
-      "sts:AssumeRole"
-    ]
-    principals {
-      type = "AWS"
-      identifiers = ["arn:aws:iam::${var.master_account_id}:root"]
-    }
-    condition {
-      test = "BoolIfExists"
-      variable = "aws:MultiFactorAuthPresent"
-      values = ["true"]
-    }
   }
 }

@@ -18,41 +18,12 @@ resource "aws_iam_account_alias" "operations" {
   provider = "aws.operations"
 }
 
-// Create IAM groups and roles in the operations account
-resource "aws_iam_role" "operations_admin_role" {
-  name = "Admin"
-  assume_role_policy = "${data.aws_iam_policy_document.master_assume_role.json}"
-  provider = "aws.operations"
-}
-
-resource "aws_iam_role_policy_attachment" "operations_admin_role" {
-  role = "${aws_iam_role.operations_admin_role.name}"
-  policy_arn = "${var.administrator_default_arn}"
-  provider = "aws.operations"
-}
-
-resource "aws_iam_role" "operations_engineer_role" {
-  name = "Engineer"
-  assume_role_policy = "${data.aws_iam_policy_document.master_assume_role.json}"
-  provider = "aws.operations"
-}
-
-resource "aws_iam_role_policy_attachment" "operations_engineer_role" {
-  role = "${aws_iam_role.operations_engineer_role.name}"
-  policy_arn = "${var.engineer_default_arn}"
-  provider = "aws.operations"
-}
-
-resource "aws_iam_role" "operations_security_audit_role" {
-  name = "SecurityAudit"
-  assume_role_policy = "${data.aws_iam_policy_document.master_assume_role.json}"
-  provider = "aws.operations"
-}
-
-resource "aws_iam_role_policy_attachment" "operations_security_audit_role" {
-  role = "${aws_iam_role.operations_security_audit_role.name}"
-  policy_arn = "${var.auditor_default_arn}"
-  provider = "aws.operations"
+module "iam-assume-roles" {
+  source = "./modules/iam-assume-roles"
+  master_account_id = "${var.master_account_id}"
+  providers = {
+    aws = "aws.operations"
+  }
 }
 
 // CloudTrail KMS Key
