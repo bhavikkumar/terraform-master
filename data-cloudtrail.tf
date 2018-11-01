@@ -45,7 +45,8 @@ data "aws_iam_policy_document" "cloudtrail_kms_policy" {
     principals {
       type = "AWS"
       identifiers = [
-        "arn:aws:iam::${aws_organizations_account.operations.id}:role/OrganizationAccountAccessRole"
+        "arn:aws:iam::${aws_organizations_account.operations.id}:role/OrganizationAccountAccessRole",
+        "arn:aws:iam::${aws_organizations_account.operations.id}:role/Admin"
       ]
     }
   }

@@ -6,7 +6,6 @@ provider "aws" {
 
 provider "aws" {
   alias = "master"
-  profile = "terraform-master"
   region = "${var.aws_default_region}"
   allowed_account_ids = ["${var.master_account_id}"]
 }

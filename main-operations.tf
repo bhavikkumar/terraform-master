@@ -1,13 +1,12 @@
 provider "aws" {
   alias = "operations"
-  profile = "terraform-master"
   region = "${var.aws_default_region}"
   allowed_account_ids = [
     "${var.master_account_id}",
     "${aws_organizations_account.operations.id}"
   ]
   assume_role {
-    role_arn = "arn:aws:iam::${aws_organizations_account.operations.id}:role/OrganizationAccountAccessRole"
+    role_arn = "arn:aws:iam::${aws_organizations_account.operations.id}:role/Admin"
     session_name = "terraform"
   }
 }
@@ -132,6 +131,8 @@ resource "aws_s3_bucket_policy" "encrypt_cloudtrail_bucket" {
             "Effect": "Deny",
             "NotPrincipal": {
                 "AWS": [
+                    "arn:aws:sts::${aws_organizations_account.operations.id}:assumed-role/Admin/terraform",
+                    "arn:aws:iam::${aws_organizations_account.operations.id}:role/Admin",
                     "arn:aws:sts::${aws_organizations_account.operations.id}:assumed-role/OrganizationAccountAccessRole/terraform",
                     "arn:aws:iam::${aws_organizations_account.operations.id}:role/OrganizationAccountAccessRole",
                     "arn:aws:iam::${aws_organizations_account.operations.id}:root"
