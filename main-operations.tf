@@ -25,7 +25,7 @@ module "iam-assume-roles" {
   }
 }
 
-module "cloudtrail-master" {
+module "cloudtrail" {
   source = "./modules/cloudtrail-master"
   aws_region = "${var.aws_default_region}"
   cloudtrail_account_id = "${aws_organizations_account.operations.id}"
@@ -36,14 +36,15 @@ module "cloudtrail-master" {
   }
 }
 
-# resource "aws_cloudtrail" "cloudtrail" {
-#   name = "operations-cloudtrail"
-#   s3_bucket_name = "${aws_s3_bucket.cloudtrail.id}"
-#   is_multi_region_trail = true
-#   enable_log_file_validation = true
-#   kms_key_id = "${aws_kms_key.cloudtrail.arn}"
-#   include_global_service_events = true
-# }
+resource "aws_cloudtrail" "cloudtrail" {
+  name = "operations-cloudtrail"
+  s3_bucket_name = "${module.cloudtrail.s3_bucket}"
+  is_multi_region_trail = true
+  enable_log_file_validation = true
+  kms_key_id = "${module.cloudtrail.kms_key_arn}"
+  include_global_service_events = true
+  provider = "aws.operations"
+}
 
 // Terraform KMS Key
 resource "aws_kms_key" "terraform" {
