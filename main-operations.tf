@@ -25,141 +25,25 @@ module "iam-assume-roles" {
   }
 }
 
-// CloudTrail KMS Key
-resource "aws_kms_key" "cloudtrail" {
-  description = "KMS Key used by all of CloudTrail logs"
-  policy = "${data.aws_iam_policy_document.cloudtrail_kms_policy.json}"
-  provider = "aws.operations"
-}
-
-resource "aws_kms_alias" "cloudtrail" {
-  name          = "alias/cloudtrail-key"
-  target_key_id = "${aws_kms_key.cloudtrail.key_id}"
-  provider = "aws.operations"
-}
-
-// CloudTrail S3 Bucket
-resource "aws_s3_bucket" "cloudtrail" {
-  bucket = "cloudtrail.${var.domain_name}"
-  acl = "private"
-
-  lifecycle_rule {
-    id      = "cloudtrail_lifecycle"
-    enabled = true
-
-    transition {
-      days          = 730
-      storage_class = "STANDARD_IA"
-    }
-
-    transition {
-      days          = 1825
-      storage_class = "GLACIER"
-    }
+module "cloudtrail-master" {
+  source = "./modules/cloudtrail-master"
+  aws_region = "${var.aws_default_region}"
+  cloudtrail_account_id = "${aws_organizations_account.operations.id}"
+  account_id_list = ["${aws_organizations_account.operations.id}", "${var.master_account_id}"]
+  domain_name = "${var.domain_name}"
+  providers = {
+    aws = "aws.operations"
   }
-
-  versioning {
-    enabled = true
-  }
-
-  server_side_encryption_configuration {
-    rule {
-      apply_server_side_encryption_by_default {
-        sse_algorithm = "aws:kms"
-        kms_master_key_id = "${aws_kms_key.cloudtrail.arn}"
-      }
-    }
-  }
-  provider = "aws.operations"
 }
 
-resource "aws_s3_bucket_policy" "encrypt_cloudtrail_bucket" {
-  bucket = "${aws_s3_bucket.cloudtrail.id}"
-  # Policy is defined instead of ${aws_iam_policy_document.cloudtrail_s3.json}
-  # due to ordering issues which caused terraform to think the policy needed
-  # updating all the time.
-  policy = <<POLICY
-{
-    "Version": "2012-10-17",
-    "Statement": [
-        {
-            "Sid": "AWSCloudTrailAclCheck",
-            "Effect": "Allow",
-            "Principal": {
-                "Service": "cloudtrail.amazonaws.com"
-            },
-            "Action": "s3:GetBucketAcl",
-            "Resource": "arn:aws:s3:::${aws_s3_bucket.cloudtrail.id}"
-        },
-        {
-            "Sid": "AWSCloudTrailWrite",
-            "Effect": "Allow",
-            "Principal": {
-                "Service": "cloudtrail.amazonaws.com"
-            },
-            "Action": "s3:PutObject",
-            "Resource": [
-                "arn:aws:s3:::${aws_s3_bucket.cloudtrail.id}/AWSLogs/${var.master_account_id}/*",
-                "arn:aws:s3:::${aws_s3_bucket.cloudtrail.id}/AWSLogs/${aws_organizations_account.operations.id}/*"
-            ],
-            "Condition": {
-                "StringEquals": {
-                    "s3:x-amz-acl": "bucket-owner-full-control"
-                }
-            }
-        },
-        {
-            "Sid": "DenyAllDelete",
-            "Effect": "Deny",
-            "Principal": {
-                "AWS": "*"
-            },
-            "Action": [
-                "s3:DeleteObjectVersionTagging",
-                "s3:DeleteObjectVersion",
-                "s3:DeleteObjectTagging",
-                "s3:DeleteObject",
-                "s3:DeleteBucket"
-            ],
-            "Resource": [
-                "arn:aws:s3:::${aws_s3_bucket.cloudtrail.id}/*",
-                "arn:aws:s3:::${aws_s3_bucket.cloudtrail.id}"
-            ]
-        },
-        {
-            "Sid": "DenyPolicyUpdateOrDelete",
-            "Effect": "Deny",
-            "NotPrincipal": {
-                "AWS": [
-                    "arn:aws:sts::${aws_organizations_account.operations.id}:assumed-role/Admin/terraform",
-                    "arn:aws:iam::${aws_organizations_account.operations.id}:role/Admin",
-                    "arn:aws:sts::${aws_organizations_account.operations.id}:assumed-role/OrganizationAccountAccessRole/terraform",
-                    "arn:aws:iam::${aws_organizations_account.operations.id}:role/OrganizationAccountAccessRole",
-                    "arn:aws:iam::${aws_organizations_account.operations.id}:root"
-                ]
-            },
-            "Action": [
-                "s3:PutBucketPolicy",
-                "s3:GetBucketPolicy",
-                "s3:DeleteBucketPolicy"
-            ],
-            "Resource": "arn:aws:s3:::${aws_s3_bucket.cloudtrail.id}"
-        }
-    ]
-}
-POLICY
-  provider = "aws.operations"
-}
-
-resource "aws_cloudtrail" "cloudtrail" {
-  name = "operations-cloudtrail"
-  s3_bucket_name = "${aws_s3_bucket.cloudtrail.id}"
-  is_multi_region_trail = true
-  enable_log_file_validation = true
-  kms_key_id = "${aws_kms_key.cloudtrail.arn}"
-  include_global_service_events = true
-  provider = "aws.operations"
-}
+# resource "aws_cloudtrail" "cloudtrail" {
+#   name = "operations-cloudtrail"
+#   s3_bucket_name = "${aws_s3_bucket.cloudtrail.id}"
+#   is_multi_region_trail = true
+#   enable_log_file_validation = true
+#   kms_key_id = "${aws_kms_key.cloudtrail.arn}"
+#   include_global_service_events = true
+# }
 
 // Terraform KMS Key
 resource "aws_kms_key" "terraform" {

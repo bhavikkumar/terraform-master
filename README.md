@@ -32,8 +32,6 @@ This terraform project initialises a account to become the root account of an AW
 ### TODO
   * Turn duplicate code blocks into modules
     * Creation of AWS Account
-    * Creation of Roles
-    * Creation of CloudTrail
   * Refactor data blocks and policies to reduce duplication
   * When Terraform supports it
     * Automate enabling service control policies

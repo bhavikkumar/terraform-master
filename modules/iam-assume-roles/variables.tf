@@ -1,4 +1,6 @@
-variable "master_account_id" {}
+variable "master_account_id" {
+  type = "string"
+}
 
 variable "administrator_default_arn" {
   default = "arn:aws:iam::aws:policy/AdministratorAccess"
