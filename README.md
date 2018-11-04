@@ -29,14 +29,6 @@ This terraform project initialises a account to become the root account of an AW
   - [x] Create a encrypted S3 bucket for terraform state
   - [x] Create a DynamoDB table for terraform state locking
 
-### TODO
-  * Turn duplicate code blocks into modules
-    * Creation of AWS Account
-  * Refactor data blocks and policies to reduce duplication
-  * When Terraform supports it
-    * Automate enabling service control policies
-    * Automate attachment of service control policies to accounts
-
 ## Initalise Master Account and Setup Terraform
 
 The following steps are required initalise the master account and terraforms first run. Best practice is to create a `tfvars` file to supply the variables. The `*.tfvars.example` file can be renamed to `*.tfvars` and updated with the appropriate variables.
