@@ -12,7 +12,15 @@ The roles which are created are the following:
 - Enforce MFA on assume role, this only happens if it exists at the moment.
 
 ## Usage
-TODO
+```
+module "iam-assume-roles" {
+  source = "./modules/iam-assume-roles"
+  master_account_id = "${var.master_account_id}"
+  providers = {
+    aws = "aws.operations"
+  }
+}
+```
 
 ## Inputs
 Name | Description | Type | Default | Required
