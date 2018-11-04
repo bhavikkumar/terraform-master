@@ -133,10 +133,10 @@ resource "aws_iam_group_policy_attachment" "billing_attach" {
 
 resource "aws_cloudtrail" "master-cloudtrail" {
   name = "master-cloudtrail"
-  s3_bucket_name = "${aws_s3_bucket.cloudtrail.id}"
+  s3_bucket_name = "${module.cloudtrail.s3_bucket}"
   is_multi_region_trail = true
   enable_log_file_validation = true
-  kms_key_id = "${aws_kms_key.cloudtrail.arn}"
+  kms_key_id = "${module.cloudtrail.kms_key_arn}"
   include_global_service_events = true
   provider = "aws.master"
 }

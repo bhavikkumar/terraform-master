@@ -1,4 +1,4 @@
-# terraform-aws-account
+# iam-assume-roles
 
 This terraform module which creates roles which can be assumed by users from the master account if they have the appropriate permissions and MFA enabled.
 
@@ -7,6 +7,9 @@ The roles which are created are the following:
 - Create admin role
 - Create engineer role
 - Create a security audit role
+
+## TODO
+- Enforce MFA on assume role, this only happens if it exists at the moment.
 
 ## Usage
 TODO
