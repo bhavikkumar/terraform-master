@@ -10,6 +10,19 @@ provider "aws" {
   allowed_account_ids = ["${var.master_account_id}"]
 }
 
+provider "aws" {
+  alias = "operations"
+  region = "${var.aws_default_region}"
+  allowed_account_ids = [
+    "${var.master_account_id}",
+    "${aws_organizations_account.operations.id}"
+  ]
+  assume_role {
+    role_arn = "arn:aws:iam::${aws_organizations_account.operations.id}:role/Admin"
+    session_name = "terraform"
+  }
+}
+
 terraform {
  backend "s3" {
    key     = "common/master"
@@ -42,17 +55,28 @@ resource "aws_organizations_account" "deleted_operations" {
   provider = "aws.master"
 }
 
-// This is the actual operations account to be used
 resource "aws_organizations_account" "operations" {
   name  = "demo-operations"
   email = "580a5d93-f5c5-46e5-84f0-140c4bb8bcaf@${var.domain_name}"
   provider = "aws.master"
 }
 
-// Set human readable alias for the account
 resource "aws_iam_account_alias" "master" {
   account_alias = "${var.prefix}-master"
   provider = "aws.master"
+}
+
+resource "aws_iam_account_alias" "operations" {
+  account_alias = "${var.prefix}-operations"
+  provider = "aws.operations"
+}
+
+module "iam-assume-roles" {
+  source = "./modules/iam-assume-roles"
+  master_account_id = "${var.master_account_id}"
+  providers = {
+    aws = "aws.operations"
+  }
 }
 
 // Create IAM groups and roles in the master account
@@ -131,6 +155,27 @@ resource "aws_iam_group_policy_attachment" "billing_attach" {
   provider = "aws.master"
 }
 
+module "cloudtrail" {
+  source = "./modules/cloudtrail-master"
+  aws_region = "${var.aws_default_region}"
+  cloudtrail_account_id = "${aws_organizations_account.operations.id}"
+  account_id_list = ["${aws_organizations_account.operations.id}", "${var.master_account_id}"]
+  domain_name = "${var.domain_name}"
+  providers = {
+    aws = "aws.operations"
+  }
+}
+
+resource "aws_cloudtrail" "cloudtrail" {
+  name = "operations-cloudtrail"
+  s3_bucket_name = "${module.cloudtrail.s3_bucket}"
+  is_multi_region_trail = true
+  enable_log_file_validation = true
+  kms_key_id = "${module.cloudtrail.kms_key_arn}"
+  include_global_service_events = true
+  provider = "aws.operations"
+}
+
 resource "aws_cloudtrail" "master-cloudtrail" {
   name = "master-cloudtrail"
   s3_bucket_name = "${module.cloudtrail.s3_bucket}"
@@ -162,4 +207,14 @@ resource "aws_organizations_policy" "scp-policy" {
 }
 CONTENT
   provider = "aws.master"
+}
+
+module "terraform" {
+  source = "./modules/terraform-state"
+  aws_region = "${var.aws_default_region}"
+  account_id = "${aws_organizations_account.operations.id}"
+  domain_name = "${var.domain_name}"
+  providers = {
+    aws = "aws.operations"
+  }
 }

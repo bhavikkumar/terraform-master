@@ -16,21 +16,16 @@ output "operations_account_alias" {
 # }
 
 output "terraform_bucket_id" {
-  value       = "${aws_s3_bucket.terraform.id}"
+  value       = "${module.terraform.s3_bucket}"
   description = "Terraform bucket ID"
 }
 
 output "terraform_kms_key_arn" {
-  value = "${aws_kms_key.terraform.arn}"
+  value = "${module.terraform.kms_key_arn}"
   description = "Terraform KMS Key ARN"
 }
 
-output "terraform_dynamodb_table_arn" {
-  value = "${aws_dynamodb_table.terraform_state_lock.arn}"
-  description = "Terraform Lock Table ARN"
-}
-
 output "terraform_dynamodb_table_name" {
-  value = "${aws_dynamodb_table.terraform_state_lock.id}"
+  value = "${module.terraform.dynamodb_table}"
   description = "Terraform Lock Table Name"
 }
