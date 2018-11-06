@@ -15,10 +15,11 @@ before_install:
 - chmod +x terraform
 script:
 - ./terraform init -backend-config="bucket=terraform.bhavik.io" -backend-config="region=${AWS_DEFAULT_REGION}" -backend-config="dynamodb_table=terraform-state" -backend-config="kms_key_id=${KMS_KEY_ID}" -backend-config="role_arn=${ROLE_ARN}"
+- ./terraform plan -input=false -var prefix=mahameru -var domain_name=bhavik.io -var master_account_id=${AWS_ACCOUNT_ID} -var aws_default_region=${AWS_DEFAULT_REGION} 2>/dev/null
 deploy:
 - provider: script
   script:
-  - ./terraform apply -backup="-" -input=false -auto-approve -var prefix=mahameru -var domain_name=bhavik.io -var master_account_id=${AWS_ACCOUNT_ID} -var aws_default_region=${AWS_DEFAULT_REGION}
+  - ./terraform apply -backup="-" -input=false -auto-approve -var prefix=mahameru -var domain_name=bhavik.io -var master_account_id=${AWS_ACCOUNT_ID} -var aws_default_region=${AWS_DEFAULT_REGION} 2>/dev/null
   skip_cleanup: true
   on:
     branch: master
