@@ -10,10 +10,10 @@ output "operations_account_alias" {
   value = "${aws_iam_account_alias.operations.account_alias}"
 }
 
-# output "cloudtrail_bucket_id" {
-#   value       = "${aws_s3_bucket.cloudtrail.id}"
-#   description = "CloudTrail bucket ID"
-# }
+output "cloudtrail_bucket_id" {
+  value       = "${module.cloudtrail.s3_bucket}"
+  description = "CloudTrail bucket ID"
+}
 
 output "terraform_bucket_id" {
   value       = "${module.terraform.s3_bucket}"
