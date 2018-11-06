@@ -47,14 +47,6 @@ resource "aws_organizations_organization" "org" {
   provider = "aws.master"
 }
 
-// This is just here because its a suspended account from earlier testing of terraform
-resource "aws_organizations_account" "deleted_operations" {
-  name  = "${var.prefix}-operations"
-  //email = "580a5d93-f5c5-46e5-84f0-140c4bb8bcaf@bhavik.io"
-  email = "vohimoket-0833@yopmail.com"
-  provider = "aws.master"
-}
-
 resource "aws_organizations_account" "operations" {
   name  = "demo-operations"
   email = "580a5d93-f5c5-46e5-84f0-140c4bb8bcaf@${var.domain_name}"
