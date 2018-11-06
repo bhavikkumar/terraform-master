@@ -1,8 +1,8 @@
 # terraform-master
 
-This terraform project initialises a account to become the root account of an AWS Organisation. The template will create the following resources:
+This terraform project initialises a account to become the root account of an AWS Organisation.
 
-** It is important to note that the resources may not be created in the order listed here **
+![architecture](https://raw.githubusercontent.com/bhavikkumar/terraform-master/master/architecture.png)
 
 ### Master Account
   - [x] Enable strict password policy
