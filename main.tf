@@ -18,7 +18,33 @@ provider "aws" {
     "${aws_organizations_account.operations.id}"
   ]
   assume_role {
-    role_arn = "arn:aws:iam::${aws_organizations_account.operations.id}:role/Admin"
+    role_arn = "arn:aws:iam::${aws_organizations_account.operations.id}:role/OrganizationAccountAccessRole"
+    session_name = "terraform"
+  }
+}
+
+provider "aws" {
+  alias = "development"
+  region = "${var.aws_default_region}"
+  allowed_account_ids = [
+    "${var.master_account_id}",
+    "${aws_organizations_account.development.id}"
+  ]
+  assume_role {
+    role_arn = "arn:aws:iam::${aws_organizations_account.development.id}:role/OrganizationAccountAccessRole"
+    session_name = "terraform"
+  }
+}
+
+provider "aws" {
+  alias = "production"
+  region = "${var.aws_default_region}"
+  allowed_account_ids = [
+    "${var.master_account_id}",
+    "${aws_organizations_account.production.id}"
+  ]
+  assume_role {
+    role_arn = "arn:aws:iam::${aws_organizations_account.production.id}:role/OrganizationAccountAccessRole"
     session_name = "terraform"
   }
 }
@@ -53,6 +79,18 @@ resource "aws_organizations_account" "operations" {
   provider = "aws.master"
 }
 
+resource "aws_organizations_account" "development" {
+  name  = "${var.prefix}-development"
+  email = "d9ebfd25-4f30-44c8-8c59-07f5ce7be59d@${var.domain_name}"
+  provider = "aws.master"
+}
+
+resource "aws_organizations_account" "production" {
+  name  = "${var.prefix}-production"
+  email = "afb0997b-2275-43f1-a789-4e812f649bbb@${var.domain_name}"
+  provider = "aws.master"
+}
+
 resource "aws_iam_account_alias" "master" {
   account_alias = "${var.prefix}-master"
   provider = "aws.master"
@@ -63,11 +101,37 @@ resource "aws_iam_account_alias" "operations" {
   provider = "aws.operations"
 }
 
-module "iam-assume-roles" {
+resource "aws_iam_account_alias" "development" {
+  account_alias = "${var.prefix}-development"
+  provider = "aws.development"
+}
+
+resource "aws_iam_account_alias" "production" {
+  account_alias = "${var.prefix}-production"
+  provider = "aws.production"
+}
+
+module "iam-assume-roles-operations" {
   source = "./modules/iam-assume-roles"
   master_account_id = "${var.master_account_id}"
   providers = {
     aws = "aws.operations"
+  }
+}
+
+module "iam-assume-roles-development" {
+  source = "./modules/iam-assume-roles"
+  master_account_id = "${var.master_account_id}"
+  providers = {
+    aws = "aws.development"
+  }
+}
+
+module "iam-assume-roles-production" {
+  source = "./modules/iam-assume-roles"
+  master_account_id = "${var.master_account_id}"
+  providers = {
+    aws = "aws.production"
   }
 }
 
@@ -151,15 +215,15 @@ module "cloudtrail" {
   source = "./modules/cloudtrail-master"
   aws_region = "${var.aws_default_region}"
   cloudtrail_account_id = "${aws_organizations_account.operations.id}"
-  account_id_list = ["${aws_organizations_account.operations.id}", "${var.master_account_id}"]
+  account_id_list = ["${aws_organizations_account.operations.id}", "${var.master_account_id}", "${aws_organizations_account.development.id}", "${aws_organizations_account.production.id}"]
   domain_name = "${var.domain_name}"
   providers = {
     aws = "aws.operations"
   }
 }
 
-resource "aws_cloudtrail" "cloudtrail" {
-  name = "operations-cloudtrail"
+resource "aws_cloudtrail" "operations-cloudtrail" {
+  name = "cloudtrail"
   s3_bucket_name = "${module.cloudtrail.s3_bucket}"
   is_multi_region_trail = true
   enable_log_file_validation = true
@@ -169,13 +233,33 @@ resource "aws_cloudtrail" "cloudtrail" {
 }
 
 resource "aws_cloudtrail" "master-cloudtrail" {
-  name = "master-cloudtrail"
+  name = "cloudtrail"
   s3_bucket_name = "${module.cloudtrail.s3_bucket}"
   is_multi_region_trail = true
   enable_log_file_validation = true
   kms_key_id = "${module.cloudtrail.kms_key_arn}"
   include_global_service_events = true
   provider = "aws.master"
+}
+
+resource "aws_cloudtrail" "development-cloudtrail" {
+  name = "cloudtrail"
+  s3_bucket_name = "${module.cloudtrail.s3_bucket}"
+  is_multi_region_trail = true
+  enable_log_file_validation = true
+  kms_key_id = "${module.cloudtrail.kms_key_arn}"
+  include_global_service_events = true
+  provider = "aws.development"
+}
+
+resource "aws_cloudtrail" "production-cloudtrail" {
+  name = "cloudtrail"
+  s3_bucket_name = "${module.cloudtrail.s3_bucket}"
+  is_multi_region_trail = true
+  enable_log_file_validation = true
+  kms_key_id = "${module.cloudtrail.kms_key_arn}"
+  include_global_service_events = true
+  provider = "aws.production"
 }
 
 resource "aws_organizations_policy" "scp-policy" {

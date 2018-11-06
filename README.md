@@ -7,7 +7,9 @@ This terraform project initialises a account to become the root account of an AW
 ### Master Account
   - [x] Enable strict password policy
   - [x] Enable AWS Organisations
-  - [x] Create an operations account
+  - [x] Create a operations account
+  - [x] Create a development account
+  - [x] Create a production account
   - [x] Enable CloudTrail Logging
   - [x] Create Organisational SCP to Deny modification or deletion of CloudTrail
   - [x] Create Account Alias
@@ -28,6 +30,20 @@ This terraform project initialises a account to become the root account of an AW
   - [x] Create a KMS Key for terraform
   - [x] Create a encrypted S3 bucket for terraform state
   - [x] Create a DynamoDB table for terraform state locking
+
+### Development Account
+  - [x] Enable CloudTrail Logging
+  - [x] Create Account Alias
+  - [x] Create admin role
+  - [x] Create engineer role
+  - [x] Create a security audit role
+
+### Production Account
+  - [x] Enable CloudTrail Logging
+  - [x] Create Account Alias
+  - [x] Create admin role
+  - [x] Create engineer role
+  - [x] Create a security audit role
 
 ## Initalise Master Account and Setup Terraform
 

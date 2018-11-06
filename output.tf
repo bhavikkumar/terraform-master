@@ -34,3 +34,23 @@ output "terraform_dynamodb_table_name" {
   value = "${module.terraform.dynamodb_table}"
   description = "Terraform Lock Table Name"
 }
+
+output "development_account_id" {
+  value = "${aws_organizations_account.development.id}"
+  sensitive = true
+}
+
+output "development_account_alias" {
+  value = "${aws_iam_account_alias.development.account_alias}"
+  sensitive = true
+}
+
+output "production_account_id" {
+  value = "${aws_organizations_account.production.id}"
+  sensitive = true
+}
+
+output "production_account_alias" {
+  value = "${aws_iam_account_alias.production.account_alias}"
+  sensitive = true
+}
