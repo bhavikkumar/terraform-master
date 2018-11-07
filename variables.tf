@@ -8,6 +8,10 @@ variable "aws_default_region" {
   default = "us-east-1"
 }
 
+variable "profile" {
+  default = ""
+}
+
 variable "administrator_default_arn" {
   default = "arn:aws:iam::aws:policy/AdministratorAccess"
 }

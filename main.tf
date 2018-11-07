@@ -1,6 +1,7 @@
 provider "aws" {
   region = "${var.aws_default_region}"
   version = "~> 1.38"
+  profile = "${var.profile}"
   skip_credentials_validation = true
 }
 
@@ -8,6 +9,7 @@ provider "aws" {
   alias = "master"
   region = "${var.aws_default_region}"
   allowed_account_ids = ["${var.master_account_id}"]
+  profile = "${var.profile}"
 }
 
 provider "aws" {
@@ -21,6 +23,7 @@ provider "aws" {
     role_arn = "arn:aws:iam::${aws_organizations_account.operations.id}:role/OrganizationAccountAccessRole"
     session_name = "terraform"
   }
+  profile = "${var.profile}"
 }
 
 provider "aws" {
@@ -34,6 +37,7 @@ provider "aws" {
     role_arn = "arn:aws:iam::${aws_organizations_account.development.id}:role/OrganizationAccountAccessRole"
     session_name = "terraform"
   }
+  profile = "${var.profile}"
 }
 
 provider "aws" {
@@ -47,6 +51,7 @@ provider "aws" {
     role_arn = "arn:aws:iam::${aws_organizations_account.production.id}:role/OrganizationAccountAccessRole"
     session_name = "terraform"
   }
+  profile = "${var.profile}"
 }
 
 terraform {

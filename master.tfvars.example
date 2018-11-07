@@ -6,3 +6,5 @@ domain_name = "acme.com"
 master_account_id = "<Master Account ID>"
 
 aws_default_region = "<AWS Region>"
+
+profile = "<The profile to use for the AWS provider>"
