@@ -79,7 +79,7 @@ resource "aws_organizations_organization" "org" {
 }
 
 resource "aws_organizations_account" "operations" {
-  name  = "demo-operations"
+  name  = "${var.prefix}-operations"
   email = "580a5d93-f5c5-46e5-84f0-140c4bb8bcaf@${var.domain_name}"
   provider = "aws.master"
 }
