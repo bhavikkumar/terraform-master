@@ -1,3 +1,8 @@
+output "master_account_id" {
+  value = "${var.master_account_id}"
+  sensitive = true
+}
+
 output "master_account_alias" {
   value = "${aws_iam_account_alias.master.account_alias}"
   sensitive = true
