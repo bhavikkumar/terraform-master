@@ -290,6 +290,7 @@ resource "aws_organizations_policy" "scp-policy" {
       "Effect": "Deny",
       "Action": [
         "cloudtrail:StopLogging",
+        "cloudtrail:UpdateTrail",
         "cloudtrail:DeleteTrail",
         "cloudtrail:PutEventSelectors"
       ],
