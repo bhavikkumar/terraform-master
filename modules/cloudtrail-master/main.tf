@@ -197,6 +197,7 @@ data "aws_iam_policy_document" "cloudtrail_s3_policy" {
 resource "aws_kms_key" "cloudtrail" {
   description = "KMS Key used by all of CloudTrail logs"
   policy = "${data.aws_iam_policy_document.cloudtrail_kms_policy.json}"
+  tags = "${var.tags}"
 }
 
 resource "aws_kms_alias" "cloudtrail" {
@@ -235,6 +236,8 @@ resource "aws_s3_bucket" "cloudtrail" {
       }
     }
   }
+
+  tags = "${var.tags}"
 }
 
 resource "aws_s3_bucket_policy" "encrypt_cloudtrail_bucket" {

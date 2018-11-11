@@ -154,6 +154,7 @@ data "aws_iam_policy_document" "terraform_s3_policy" {
 resource "aws_kms_key" "terraform" {
   description = "KMS Key used by Terraform"
   policy = "${data.aws_iam_policy_document.terraform_kms_policy.json}"
+  tags = "${var.tags}"
 }
 
 resource "aws_kms_alias" "terraform" {
@@ -177,6 +178,8 @@ resource "aws_s3_bucket" "terraform" {
       }
     }
   }
+
+  tags = "${var.tags}"
 }
 
 resource "aws_s3_bucket_policy" "encrypt_terraform_bucket" {
@@ -194,4 +197,6 @@ resource "aws_dynamodb_table" "terraform_state_lock" {
     name = "LockID"
     type = "S"
   }
+
+  tags = "${var.tags}"
 }

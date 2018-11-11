@@ -1,3 +1,7 @@
+variable "billing_default_arn" {
+  default = "arn:aws:iam::aws:policy/job-function/Billing"
+}
+
 variable "prefix" {}
 
 variable "domain_name" {}
@@ -12,22 +16,8 @@ variable "profile" {
   default = ""
 }
 
-variable "administrator_default_arn" {
-  default = "arn:aws:iam::aws:policy/AdministratorAccess"
-}
-
-variable "engineer_default_arn" {
-  default = "arn:aws:iam::aws:policy/PowerUserAccess"
-}
-
-variable "billing_default_arn" {
-  default = "arn:aws:iam::aws:policy/job-function/Billing"
-}
-
-variable "auditor_default_arn" {
-  default = "arn:aws:iam::aws:policy/SecurityAudit"
-}
-
-variable "read_only_default_arn" {
-  default = "arn:aws:iam::aws:policy/ReadOnlyAccess"
+variable "tags" {
+  type = "map"
+  description = "A map of tags to add to all resources"
+  default     = {}
 }

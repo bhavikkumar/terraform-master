@@ -29,6 +29,7 @@ aws_region | The AWS Region to create resources | string | - | yes
 cloudtrail_account_id | The account id where the resources will be create | string | - | yes
 account_id_list | The list of account ids which need access to the KMS key and S3 bucket | list | - | yes
 domain_name | The domain name which will be used as the suffix for the s3 bucket | string | - | yes
+tags | A map of tags to add to all resources | map | `{}` | no
 
 ## Outputs
 Name | Description

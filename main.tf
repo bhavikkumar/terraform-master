@@ -61,6 +61,13 @@ terraform {
  }
 }
 
+locals {
+  common_tags = {
+    Owner = "global"
+    Environment = "production"
+  }
+}
+
 resource "aws_iam_account_password_policy" "strict" {
   minimum_password_length        = 12
   require_lowercase_characters   = true
@@ -222,6 +229,7 @@ module "cloudtrail" {
   cloudtrail_account_id = "${aws_organizations_account.operations.id}"
   account_id_list = ["${aws_organizations_account.operations.id}", "${var.master_account_id}", "${aws_organizations_account.development.id}", "${aws_organizations_account.production.id}"]
   domain_name = "${var.domain_name}"
+  tags = "${merge(local.common_tags, var.tags)}"
   providers = {
     aws = "aws.operations"
   }
@@ -234,6 +242,7 @@ resource "aws_cloudtrail" "operations-cloudtrail" {
   enable_log_file_validation = true
   kms_key_id = "${module.cloudtrail.kms_key_arn}"
   include_global_service_events = true
+  tags = "${merge(local.common_tags, var.tags)}"
   provider = "aws.operations"
 }
 
@@ -244,6 +253,7 @@ resource "aws_cloudtrail" "master-cloudtrail" {
   enable_log_file_validation = true
   kms_key_id = "${module.cloudtrail.kms_key_arn}"
   include_global_service_events = true
+  tags = "${merge(local.common_tags, var.tags)}"
   provider = "aws.master"
 }
 
@@ -254,6 +264,7 @@ resource "aws_cloudtrail" "development-cloudtrail" {
   enable_log_file_validation = true
   kms_key_id = "${module.cloudtrail.kms_key_arn}"
   include_global_service_events = true
+  tags = "${merge(local.common_tags, var.tags)}"
   provider = "aws.development"
 }
 
@@ -264,6 +275,7 @@ resource "aws_cloudtrail" "production-cloudtrail" {
   enable_log_file_validation = true
   kms_key_id = "${module.cloudtrail.kms_key_arn}"
   include_global_service_events = true
+  tags = "${merge(local.common_tags, var.tags)}"
   provider = "aws.production"
 }
 
@@ -295,6 +307,7 @@ module "terraform" {
   aws_region = "${var.aws_default_region}"
   account_id = "${aws_organizations_account.operations.id}"
   domain_name = "${var.domain_name}"
+  tags = "${merge(local.common_tags, var.tags)}"
   providers = {
     aws = "aws.operations"
   }

@@ -28,10 +28,11 @@ Name | Description | Type | Default | Required
 aws_region | The AWS Region to create resources | string | - | yes
 account_id | The account id where the resources will be create | string | - | yes
 domain_name | The domain name which will be used as the suffix for the s3 bucket | string | - | yes
+tags | A map of tags to add to all resources | map | `{}` | no
 
 ## Outputs
 Name | Description
 ---- | -----------
+dynamodb_table | The name of the dynamodb table which can be used for locking the state
 kms_key_arn | The ARN of the KMS Key which Terraform will use to encrypt the state
 s3_bucket | The name of the S3 bucket where Terraform will use to store its state
-dynamodb_table | The name of the dynamodb table which can be used for locking the state

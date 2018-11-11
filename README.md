@@ -90,3 +90,30 @@ terraform {
 ## User Terraform Setup
 Once the state has been stored in S3, users have to run the following command if they are setting up their local environment or if you ever set or change modules or backend configuration for Terraform.
  * `terraform init "-backend-config=backend.tfvars"`
+
+## Inputs
+Name | Description | Type | Default | Required
+---- | ----------- | ---- | ------- | --------
+aws_default_region | The AWS Region to create resources | string | - | yes
+billing_default_arn |  The managed ARN which will be attached to the finance group | string | arn:aws:iam::aws:policy/job-function/Billing | no
+domain_name | The domain name which will be used as the suffix for s3 buckets and email addresses | string | - | yes
+master_account_id | The account id which will be the root organisation | string | - | yes
+prefix | The prefix to use for resources | string | - | yes
+profile | A profile in ~/.aws/credentials which is used for terraform | string | `""` | no
+tags | A map of tags to add to all resources | map | `{}` | no
+
+## Outputs
+Name | Description
+---- | -----------
+cloudtrail_bucket_id | The name of the cloudtrail bucket where all trails will be centralised
+development_account_alias | The alias of the development account
+development_account_id | The development account id
+master_account_alias | The alias of the root account
+master_account_id | The root account id
+operations_account_alias | The alias of the operations account
+operations_account_id | The operation account id
+production_account_alias | The alias of the production account
+production_account_id | The production account id
+terraform_bucket_id | The name of the terraform state bucket
+terraform_dynamodb_table_name | The name of the terraform dynamodb table
+terraform_kms_key_arn | The KMS Key id used by terraform to encrypt the s3 bucket at rest
