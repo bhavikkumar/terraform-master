@@ -294,22 +294,6 @@ resource "aws_organizations_policy" "scp-policy" {
         "cloudtrail:PutEventSelectors"
       ],
       "Resource": "*"
-    },
-    {
-      "Effect": "Deny",
-      "Action": [
-        "cloudtrail:UpdateTrail"
-      ],
-      "Resource": "*",
-      "NotPrincipal": {
-        "AWS": [
-              "arn:aws:sts::336840772780:assumed-role/OrganizationAccountAccessRole/terraform",
-              "arn:aws:iam::336840772780:root",
-              "arn:aws:iam::336840772780:role/Admin",
-              "arn:aws:iam::336840772780:role/OrganizationAccountAccessRole",
-              "arn:aws:sts::336840772780:assumed-role/Admin/terraform"
-        ]
-      }
     }
   ]
 }
