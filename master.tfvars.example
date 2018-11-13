@@ -1,10 +1,6 @@
-aws_default_region = "<AWS Region>"
-
+aws_default_region  = "<AWS Region>"
 # S3 buckets and DNS will be based on this domain name
-domain_name = "acme.com"
-
-master_account_id = "<Master Account ID>"
-
-prefix = "<Friendly Name Prefix>"
-
-profile = "<The profile to use for the AWS provider>"
+domain_name         = "acme.com"
+master_account_id   = "<Master Account ID>"
+prefix              = "<Friendly Name Prefix>"
+profile             = "<The profile to use for the AWS provider>"

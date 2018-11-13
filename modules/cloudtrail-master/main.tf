@@ -1,33 +1,49 @@
 data "aws_iam_policy_document" "cloudtrail_kms_policy" {
   statement {
-    sid = "AllowAliasCreation"
-    effect = "Allow"
+    sid     = "AllowAliasCreation"
+    effect  = "Allow"
+
     actions = [
       "kms:CreateAlias"
     ]
+
+    resources = [
+      "*"
+    ]
+
     principals {
       type = "AWS"
+
       identifiers = [
         "arn:aws:iam::${var.cloudtrail_account_id}:role/OrganizationAccountAccessRole",
         "arn:aws:iam::${var.cloudtrail_account_id}:role/Admin"
       ]
     }
-    resources = ["*"]
+
     condition {
-      test = "StringEquals"
-      variable = "kms:ViaService"
-      values = ["ec2.${var.aws_region}.amazonaws.com"]
+      test      = "StringEquals"
+      variable  = "kms:ViaService"
+
+      values = [
+        "ec2.${var.aws_region}.amazonaws.com"
+      ]
     }
+
     condition {
-      test = "StringEquals"
-      variable = "kms:CallerAccount"
-      values = ["${var.cloudtrail_account_id}"]
+      test      = "StringEquals"
+      variable  = "kms:CallerAccount"
+
+      values = [
+        "${var.cloudtrail_account_id}"
+      ]
     }
   }
+
   # This statement only allows terraform user to change this policy.
   statement {
-    sid = "AllowAccessForKeyAdministrators"
-    effect = "Allow"
+    sid     = "AllowAccessForKeyAdministrators"
+    effect  = "Allow"
+
     actions = [
       "kms:Create*",
       "kms:Describe*",
@@ -42,59 +58,85 @@ data "aws_iam_policy_document" "cloudtrail_kms_policy" {
       "kms:TagResource",
       "kms:UntagResource"
     ]
-    resources = ["*"]
+
+    resources = [
+      "*"
+    ]
+
     principals {
       type = "AWS"
+
       identifiers = [
         "arn:aws:iam::${var.cloudtrail_account_id}:role/OrganizationAccountAccessRole",
         "arn:aws:iam::${var.cloudtrail_account_id}:role/Admin"
       ]
     }
   }
+
   statement {
-    sid = "AllowCloudTrailToDescribeKey"
-    effect = "Allow"
+    sid     = "AllowCloudTrailToDescribeKey"
+    effect  = "Allow"
+
     actions = [
       "kms:DescribeKey"
     ]
-    resources = ["*"]
+
+    resources = [
+      "*"
+    ]
+
     principals {
       type = "Service"
+
       identifiers = [
         "cloudtrail.amazonaws.com"
       ]
     }
   }
+
   statement {
-    sid = "AllowCloudTrailToEncryptLogs"
-    effect = "Allow"
+    sid     = "AllowCloudTrailToEncryptLogs"
+    effect  = "Allow"
+
     actions = [
       "kms:GenerateDataKey"
     ]
-    resources = ["*"]
+
+    resources = [
+      "*"
+    ]
+
     principals {
       type = "Service"
+
       identifiers = [
         "cloudtrail.amazonaws.com"
       ]
     }
     condition {
-      test = "StringLike"
-      variable = "kms:EncryptionContext:aws:cloudtrail:arn"
+      test      = "StringLike"
+      variable  = "kms:EncryptionContext:aws:cloudtrail:arn"
+
       values = [
         "${formatlist("arn:aws:cloudtrail:*:%s:trail/*", var.account_id_list)}"
       ]
     }
   }
   statement {
-    sid = "AllowDecryptionOfCloudTrailLogs"
-    effect = "Allow"
+    sid     = "AllowDecryptionOfCloudTrailLogs"
+    effect  = "Allow"
+
     actions = [
       "kms:Decrypt"
     ]
-    resources = ["*"]
+
+    resources = [
+      "*"
+    ]
+
     principals {
       type = "AWS"
+
       identifiers = [
         "arn:aws:iam::${var.cloudtrail_account_id}:role/Admin",
         "arn:aws:iam::${var.cloudtrail_account_id}:role/Engineer",
@@ -102,8 +144,9 @@ data "aws_iam_policy_document" "cloudtrail_kms_policy" {
       ]
     }
     condition {
-      test = "Null"
-      variable = "kms:EncryptionContext:aws:cloudtrail:arn"
+      test      = "Null"
+      variable  = "kms:EncryptionContext:aws:cloudtrail:arn"
+
       values = [
         "false"
       ]
@@ -113,47 +156,58 @@ data "aws_iam_policy_document" "cloudtrail_kms_policy" {
 
 data "aws_iam_policy_document" "cloudtrail_s3_policy" {
   statement {
-    sid = "AWSCloudTrailAclCheck"
-    effect = "Allow"
+    sid     = "AWSCloudTrailAclCheck"
+    effect  = "Allow"
+
     actions = [
       "s3:GetBucketAcl"
     ]
-    principals {
-      type = "Service"
-      identifiers = [
-        "cloudtrail.amazonaws.com"
-      ]
-    }
+
     resources = [
       "arn:aws:s3:::${aws_s3_bucket.cloudtrail.id}"
     ]
-  }
-  statement {
-    sid = "AWSCloudTrailWrite"
-    effect = "Allow"
-    actions = [
-      "s3:PutObject"
-    ]
+
     principals {
       type = "Service"
+
       identifiers = [
         "cloudtrail.amazonaws.com"
       ]
     }
+  }
+
+  statement {
+    sid     = "AWSCloudTrailWrite"
+    effect  = "Allow"
+
+    actions = [
+      "s3:PutObject"
+    ]
+
     resources = [
       "${formatlist("arn:aws:s3:::%s/AWSLogs/%s/*", aws_s3_bucket.cloudtrail.id, var.account_id_list)}"
     ]
+
+    principals {
+      type = "Service"
+
+      identifiers = [
+        "cloudtrail.amazonaws.com"
+      ]
+    }
     condition {
-      test = "StringEquals"
-      variable = "s3:x-amz-acl"
+      test      = "StringEquals"
+      variable  = "s3:x-amz-acl"
       values = [
         "bucket-owner-full-control"
       ]
     }
   }
+
   statement {
-    sid = "DenyAllDelete"
-    effect = "Deny"
+    sid     = "DenyAllDelete"
+    effect  = "Deny"
+
     actions = [
       "s3:DeleteObjectVersionTagging",
       "s3:DeleteObjectVersion",
@@ -161,25 +215,37 @@ data "aws_iam_policy_document" "cloudtrail_s3_policy" {
       "s3:DeleteObject",
       "s3:DeleteBucket"
     ]
-    principals {
-      type = "AWS"
-      identifiers = ["*"]
-    }
+
     resources = [
       "arn:aws:s3:::${aws_s3_bucket.cloudtrail.id}/*",
       "arn:aws:s3:::${aws_s3_bucket.cloudtrail.id}"
     ]
+
+    principals {
+      type        = "AWS"
+
+      identifiers = [
+        "*"
+      ]
+    }
   }
   statement {
-    sid = "DenyPolicyUpdateOrDelete"
-    effect = "Deny"
+    sid     = "DenyPolicyUpdateOrDelete"
+    effect  = "Deny"
+
     actions = [
       "s3:PutBucketPolicy",
       "s3:GetBucketPolicy",
       "s3:DeleteBucketPolicy"
     ]
+
+    resources = [
+      "arn:aws:s3:::${aws_s3_bucket.cloudtrail.id}"
+    ]
+
     not_principals {
       type = "AWS"
+
       identifiers = [
         "arn:aws:sts::${var.cloudtrail_account_id}:assumed-role/Admin/terraform",
         "arn:aws:iam::${var.cloudtrail_account_id}:role/Admin",
@@ -188,16 +254,13 @@ data "aws_iam_policy_document" "cloudtrail_s3_policy" {
         "arn:aws:iam::${var.cloudtrail_account_id}:root"
       ]
     }
-    resources = [
-      "arn:aws:s3:::${aws_s3_bucket.cloudtrail.id}"
-    ]
   }
 }
 
 resource "aws_kms_key" "cloudtrail" {
   description = "KMS Key used by all of CloudTrail logs"
-  policy = "${data.aws_iam_policy_document.cloudtrail_kms_policy.json}"
-  tags = "${var.tags}"
+  policy      = "${data.aws_iam_policy_document.cloudtrail_kms_policy.json}"
+  tags        = "${var.tags}"
 }
 
 resource "aws_kms_alias" "cloudtrail" {
@@ -206,8 +269,8 @@ resource "aws_kms_alias" "cloudtrail" {
 }
 
 resource "aws_s3_bucket" "cloudtrail" {
-  bucket = "cloudtrail.${var.domain_name}"
-  acl = "private"
+  bucket  = "cloudtrail.${var.domain_name}"
+  acl     = "private"
 
   lifecycle_rule {
     id      = "cloudtrail_lifecycle"
@@ -231,7 +294,7 @@ resource "aws_s3_bucket" "cloudtrail" {
   server_side_encryption_configuration {
     rule {
       apply_server_side_encryption_by_default {
-        sse_algorithm = "aws:kms"
+        sse_algorithm     = "aws:kms"
         kms_master_key_id = "${aws_kms_key.cloudtrail.arn}"
       }
     }

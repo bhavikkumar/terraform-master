@@ -11,7 +11,7 @@ variable "domain_name" {
 }
 
 variable "tags" {
-  type = "map"
+  type        = "map"
   description = "A map of tags to add to all resources"
   default     = {}
 }

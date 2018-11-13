@@ -2,8 +2,9 @@
 // This policy is described in https://docs.aws.amazon.com/IAM/latest/UserGuide/tutorial_users-self-manage-mfa-and-creds.html
 data "aws_iam_policy_document" "mfa" {
   statement {
-    sid = "AllowAllUsersToListAccounts"
-    effect = "Allow"
+    sid     = "AllowAllUsersToListAccounts"
+    effect  = "Allow"
+
     actions = [
       "iam:ListAccountAliases",
       "iam:ListUsers",
@@ -11,12 +12,16 @@ data "aws_iam_policy_document" "mfa" {
       "iam:GetAccountPasswordPolicy",
       "iam:GetAccountSummary"
     ]
-    resources = ["*"]
+
+    resources = [
+      "*"
+    ]
   }
 
   statement {
-    sid = "AllowIndividualUserToSeeAndManageOnlyTheirOwnAccountInformation"
-    effect = "Allow"
+    sid     = "AllowIndividualUserToSeeAndManageOnlyTheirOwnAccountInformation"
+    effect  = "Allow"
+
     actions = [
       "iam:ChangePassword",
       "iam:CreateAccessKey",
@@ -37,12 +42,16 @@ data "aws_iam_policy_document" "mfa" {
       "iam:UpdateSSHPublicKey",
       "iam:UploadSSHPublicKey"
     ]
-    resources = ["arn:aws:iam::${var.master_account_id}:user/$${aws:username}"]
+
+    resources = [
+      "arn:aws:iam::${var.master_account_id}:user/$${aws:username}"
+    ]
   }
 
   statement {
-    sid = "AllowIndividualUserToViewAndManageTheirOwnMFA"
-    effect = "Allow"
+    sid     = "AllowIndividualUserToViewAndManageTheirOwnMFA"
+    effect  = "Allow"
+
     actions = [
       "iam:CreateVirtualMFADevice",
       "iam:DeleteVirtualMFADevice",
@@ -50,6 +59,7 @@ data "aws_iam_policy_document" "mfa" {
       "iam:ListMFADevices",
       "iam:ResyncMFADevice"
     ]
+
     resources = [
       "arn:aws:iam::${var.master_account_id}:mfa/$${aws:username}",
       "arn:aws:iam::${var.master_account_id}:user/$${aws:username}"
@@ -57,11 +67,13 @@ data "aws_iam_policy_document" "mfa" {
   }
 
   statement {
-    sid = "AllowIndividualUserToDeactivateOnlyTheirOwnMFAOnlyWhenUsingMFA"
-    effect = "Allow"
+    sid     = "AllowIndividualUserToDeactivateOnlyTheirOwnMFAOnlyWhenUsingMFA"
+    effect  = "Allow"
+
     actions = [
       "iam:DeactivateMFADevice"
     ]
+
     resources = [
       "arn:aws:iam::${var.master_account_id}:mfa/$${aws:username}",
       "arn:aws:iam::${var.master_account_id}:user/$${aws:username}"
@@ -69,8 +81,9 @@ data "aws_iam_policy_document" "mfa" {
   }
 
   statement {
-    sid = "BlockMostAccessUnlessSignedInWithMFA"
-    effect = "Deny"
+    sid     = "BlockMostAccessUnlessSignedInWithMFA"
+    effect  = "Deny"
+
     not_actions = [
       "iam:CreateVirtualMFADevice",
       "iam:DeleteVirtualMFADevice",
@@ -86,11 +99,18 @@ data "aws_iam_policy_document" "mfa" {
       "iam:GetAccountSummary",
       "sts:GetSessionToken"
     ]
-    not_resources = ["*"]
+
+    not_resources = [
+      "*"
+    ]
+
     condition {
-      test = "BoolIfExists"
-      variable = "aws:MultiFactorAuthPresent"
-      values = ["false"]
+      test      = "BoolIfExists"
+      variable  = "aws:MultiFactorAuthPresent"
+
+      values = [
+        "false"
+      ]
     }
   }
 
@@ -99,11 +119,13 @@ data "aws_iam_policy_document" "mfa" {
 
 data "aws_iam_policy_document" "admin_group" {
   statement {
-    sid = "AllowUsersToAssumeTheAdminOrReadOnlyRole"
-    effect = "Allow"
+    sid     = "AllowUsersToAssumeTheAdminOrReadOnlyRole"
+    effect  = "Allow"
+
     actions = [
       "sts:AssumeRole"
     ]
+
     resources = [
       "arn:aws:iam::*:role/Admin",
     ]
@@ -112,11 +134,13 @@ data "aws_iam_policy_document" "admin_group" {
 
 data "aws_iam_policy_document" "engineer_group" {
   statement {
-    sid = "AllowUsersToAssumeTheEngineerRole"
-    effect = "Allow"
+    sid     = "AllowUsersToAssumeTheEngineerRole"
+    effect  = "Allow"
+
     actions = [
       "sts:AssumeRole"
     ]
+
     resources = [
       "arn:aws:iam::*:role/Engineer"
     ]
@@ -125,11 +149,13 @@ data "aws_iam_policy_document" "engineer_group" {
 
 data "aws_iam_policy_document" "security_audit_group" {
   statement {
-    sid = "AllowUsersToAssumeTheSecurityAuditRole"
-    effect = "Allow"
+    sid     = "AllowUsersToAssumeTheSecurityAuditRole"
+    effect  = "Allow"
+
     actions = [
       "sts:AssumeRole"
     ]
+    
     resources = [
       "arn:aws:iam::*:role/SecurityAudit"
     ]
