@@ -176,6 +176,18 @@ resource "aws_iam_group_policy" "admin_assume_role" {
   provider  = "aws.master"
 }
 
+resource "aws_iam_group_policy_attachment" "admin_iam" {
+  group       = "${aws_iam_group.admin.id}"
+  policy_arn = "${var.iam_admin_arn}"
+  provider    = "aws.master"
+}
+
+resource "aws_iam_group_policy_attachment" "admin_billing" {
+  group       = "${aws_iam_group.admin.id}"
+  policy_arn  = "${var.billing_default_arn}"
+  provider    = "aws.master"
+}
+
 resource "aws_iam_group" "engineer" {
   name      = "Engineer"
   provider  = "aws.master"
@@ -325,7 +337,7 @@ module "terraform" {
   account_id  = "${aws_organizations_account.operations.id}"
   domain_name = "${var.domain_name}"
   tags        = "${merge(local.common_tags, var.tags)}"
-  
+
   providers = {
     aws = "aws.operations"
   }

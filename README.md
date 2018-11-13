@@ -52,8 +52,7 @@ The following steps are required initalise the master account and terraforms fir
 **The .gitignore is setup to ignore any `.tfvars` variable files as they could contain sensitive information.**
 
 1. Create a AWS account to be the master account and then run the CloudFormation script in `init/terraform-init.yaml`. The CloudFormation script creates the following resources:
-
-  * Terraform User and Credentials
+    * Terraform User and Credentials
 
 2. Setup the AWS profile using `aws configure --profile terraform-master`. The outputs of the CloudFormation script should be used when prompted.
 
@@ -95,11 +94,12 @@ Once the state has been stored in S3, users have to run the following command if
 Name | Description | Type | Default | Required
 ---- | ----------- | ---- | ------- | --------
 aws_default_region | The AWS Region to create resources | string | - | yes
-billing_default_arn |  The managed ARN which will be attached to the finance group | string | arn:aws:iam::aws:policy/job-function/Billing | no
+billing_default_arn |  The managed ARN which will be attached to the finance group | string | `arn:aws:iam::aws:policy/job-function/Billing` | no
 domain_name | The domain name which will be used as the suffix for s3 buckets and email addresses | string | - | yes
+iam_admin_arn | The managed ARN which will allow admins full access to IAM | string | `arn:aws:iam::aws:policy/IAMFullAccess` | no
 master_account_id | The account id which will be the root organisation | string | - | yes
 prefix | The prefix to use for resources | string | - | yes
-profile | A profile in ~/.aws/credentials which is used for terraform | string | `""` | no
+profile | A profile in ~/.aws/credentials which is used for terraform | string | `default` | no
 tags | A map of tags to add to all resources | map | `{}` | no
 
 ## Outputs

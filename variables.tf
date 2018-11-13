@@ -1,19 +1,33 @@
 variable "aws_default_region" {
+  type    = "string"
   default = "us-east-1"
 }
 
 variable "billing_default_arn" {
+  type    = "string"
   default = "arn:aws:iam::aws:policy/job-function/Billing"
 }
 
-variable "domain_name" {}
+variable "domain_name" {
+  type = "string"
+}
 
-variable "master_account_id" {}
+variable "iam_admin_arn" {
+  type    = "string"
+  default = "arn:aws:iam::aws:policy/IAMFullAccess"
+}
 
-variable "prefix" {}
+variable "master_account_id" {
+  type = "string"
+}
+
+variable "prefix" {
+  type = "string"
+}
 
 variable "profile" {
-  default = ""
+  type    = "string"
+  default = "default"
 }
 
 variable "tags" {
