@@ -119,7 +119,7 @@ data "aws_iam_policy_document" "mfa" {
 
 data "aws_iam_policy_document" "admin_group" {
   statement {
-    sid     = "AllowUsersToAssumeTheAdminOrReadOnlyRole"
+    sid     = "AllowUsersToAssumeTheAdminRole"
     effect  = "Allow"
 
     actions = [
@@ -128,6 +128,29 @@ data "aws_iam_policy_document" "admin_group" {
 
     resources = [
       "arn:aws:iam::*:role/Admin",
+    ]
+  }
+
+  statement {
+    sid    = "AllowAdminsToManageUsers"
+    effect = "Allow"
+
+    actions = [
+      "iam:AddUserToGroup",
+      "iam:ChangePassword",
+      "iam:CreateAccessKey",
+      "iam:CreateLoginProfile",
+      "iam:CreateUser",
+      "iam:DeleteAccessKey",
+      "iam:DeleteLoginProfile",
+      "iam:DeleteSSHPublicKey",
+      "iam:DeleteUser",
+      "iam:DeleteVirtualMFADevice",
+      "iam:RemoveUserFromGroup"
+    ]
+
+    resources = [
+      "*"
     ]
   }
 }
@@ -155,7 +178,7 @@ data "aws_iam_policy_document" "security_audit_group" {
     actions = [
       "sts:AssumeRole"
     ]
-    
+
     resources = [
       "arn:aws:iam::*:role/SecurityAudit"
     ]

@@ -176,9 +176,9 @@ resource "aws_iam_group_policy" "admin_assume_role" {
   provider  = "aws.master"
 }
 
-resource "aws_iam_group_policy_attachment" "admin_iam" {
+resource "aws_iam_group_policy_attachment" "admin_iam_read_only" {
   group       = "${aws_iam_group.admin.id}"
-  policy_arn = "${var.iam_admin_arn}"
+  policy_arn  = "arn:aws:iam::aws:policy/IAMReadOnlyAccess"
   provider    = "aws.master"
 }
 
