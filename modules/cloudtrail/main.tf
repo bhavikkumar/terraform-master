@@ -1,4 +1,4 @@
-data "aws_iam_policy_document" "cloudwatch_assume_role" {
+data "aws_iam_policy_document" "cloudwatch_assume" {
   statement {
     effect = "Allow"
 
@@ -10,28 +10,38 @@ data "aws_iam_policy_document" "cloudwatch_assume_role" {
       type = "Service"
 
       identifiers = [
-        "logs.${var.aws_default_region}.amazonaws.com"
+        "cloudtrail.amazonaws.com"
       ]
     }
   }
 }
 
-data "aws_iam_policy_document" "cloudwatch_kms" {
+data "aws_iam_policy_document" "cloudwatch_write" {
   statement {
     effect = "Allow"
 
     actions = [
-      "kms:Encrypt*",
-      "kms:Decrypt*",
-      "kms:ReEncrypt*",
-      "kms:GenerateDataKey*",
-      "kms:Describe*"
+      "logs:CreateLogStream",
+      "logs:PutLogEvents"
     ]
 
     resources = [
-      "${aws_kms_key.default.arn}"
+      "${aws_cloudwatch_log_group.cloudtrail.arn}"
     ]
   }
+}
+
+resource "aws_iam_role" "cloudtrail" {
+  name               = "CloudwatchToKinesisStream"
+  description        = "Used by CloudTrail to write logs to cloudwatch"
+  assume_role_policy = "${data.aws_iam_policy_document.cloudwatch_assume.json}"
+  tags               = "${merge(local.common_tags, var.tags)}"
+}
+
+resource "aws_iam_role_policy" "put_kinesis_events" {
+  name   = "CloudwatchLogPermissions"
+  role   = "${aws_iam_role.cloudtrail.name}"
+  policy = "${data.aws_iam_policy_document.cloudwatch_write.json}"
 }
 
 resource "aws_cloudwatch_log_group" "cloudtrail" {
@@ -43,7 +53,8 @@ resource "aws_cloudwatch_log_group" "cloudtrail" {
 
 resource "aws_cloudtrail" "operations-cloudtrail" {
   name                          = "cloudtrail"
-  cloud_watch_logs_group_arn    = "${aws_cloudwatch_log_group.cloudtrail}"
+  cloud_watch_logs_role_arn     = "${aws_iam_role.cloudtrail.arn}"
+  cloud_watch_logs_group_arn    = "${aws_cloudwatch_log_group.cloudtrail.arn}"
   s3_bucket_name                = "${var.s3_bucket}"
   is_multi_region_trail         = true
   enable_log_file_validation    = true
