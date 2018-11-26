@@ -1,6 +1,6 @@
 provider "aws" {
   region                      = "${var.aws_default_region}"
-  version                     = "~> 1.38"
+  version                     = "~> 1.48.0"
   profile                     = "${var.profile}"
   skip_credentials_validation = true
 }
@@ -270,6 +270,18 @@ module "cloudtrail" {
     "${aws_organizations_account.development.id}",
     "${aws_organizations_account.production.id}"
   ]
+
+  providers = {
+    aws = "aws.operations"
+  }
+}
+
+module "cloudtrail-operations" {
+  source             = "./modules/cloudtrail"
+  cloudtrail_kms_key = "${module.cloudtrail.kms_key_arn}"
+  cloudwatch_kms_key = "${aws_kms_alias.default.arn}"
+  s3_bucket          = "${module.cloudtrail.s3_bucket}"
+  tags               = "${merge(local.common_tags, var.tags)}"
 
   providers = {
     aws = "aws.operations"

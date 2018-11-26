@@ -32,13 +32,13 @@ data "aws_iam_policy_document" "cloudwatch_write" {
 }
 
 resource "aws_iam_role" "cloudtrail" {
-  name               = "CloudwatchToKinesisStream"
+  name               = "CloudTrail"
   description        = "Used by CloudTrail to write logs to cloudwatch"
   assume_role_policy = "${data.aws_iam_policy_document.cloudwatch_assume.json}"
-  tags               = "${merge(local.common_tags, var.tags)}"
+  tags               = "${var.tags}"
 }
 
-resource "aws_iam_role_policy" "put_kinesis_events" {
+resource "aws_iam_role_policy" "cloudwatch_write" {
   name   = "CloudwatchLogPermissions"
   role   = "${aws_iam_role.cloudtrail.name}"
   policy = "${data.aws_iam_policy_document.cloudwatch_write.json}"
