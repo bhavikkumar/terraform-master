@@ -10,6 +10,7 @@ This terraform project initialises a account to become the root account of an AW
   - [x] Create a operations account
   - [x] Create a development account
   - [x] Create a production account
+  - [X] Create Cloudwatch Log Group for CloudTrail  
   - [x] Enable CloudTrail Logging
   - [x] Create Organisational SCP to Deny modification or deletion of CloudTrail
   - [x] Create Account Alias
@@ -23,6 +24,7 @@ This terraform project initialises a account to become the root account of an AW
 ### Operations Account
   - [x] Create a KMS Key for CloudTrail
   - [x] Create a encrypted S3 bucket for CloudTrail logs
+  - [X] Create Cloudwatch Log Group for CloudTrail   
   - [x] Enable CloudTrail Logging
   - [x] Create admin role
   - [x] Create engineer role
@@ -30,8 +32,10 @@ This terraform project initialises a account to become the root account of an AW
   - [x] Create a KMS Key for terraform
   - [x] Create a encrypted S3 bucket for terraform state
   - [x] Create a DynamoDB table for terraform state locking
+  - [x] Create a KMS Key for regular usage
 
 ### Development Account
+  - [X] Create Cloudwatch Log Group for CloudTrail  
   - [x] Enable CloudTrail Logging
   - [x] Create Account Alias
   - [x] Create admin role
@@ -39,6 +43,7 @@ This terraform project initialises a account to become the root account of an AW
   - [x] Create a security audit role
 
 ### Production Account
+  - [X] Create Cloudwatch Log Group for CloudTrail
   - [x] Enable CloudTrail Logging
   - [x] Create Account Alias
   - [x] Create admin role

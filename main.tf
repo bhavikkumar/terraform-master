@@ -244,6 +244,19 @@ resource "aws_iam_group_policy_attachment" "billing_attach" {
   provider    = "aws.master"
 }
 
+resource "aws_kms_key" "default" {
+  description = "The default KMS Key used for all services"
+  policy      = "${data.aws_iam_policy_document.default_kms_policy.json}"
+  tags        = "${merge(local.common_tags, var.tags)}"
+  provider    = "aws.operations"
+}
+
+resource "aws_kms_alias" "default" {
+  name          = "alias/default-key"
+  target_key_id = "${aws_kms_key.default.key_id}"
+  provider      = "aws.operations"
+}
+
 module "cloudtrail" {
   source                = "./modules/cloudtrail-master"
   aws_region            = "${var.aws_default_region}"

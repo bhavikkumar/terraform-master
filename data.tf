@@ -155,9 +155,127 @@ data "aws_iam_policy_document" "security_audit_group" {
     actions = [
       "sts:AssumeRole"
     ]
-    
+
     resources = [
       "arn:aws:iam::*:role/SecurityAudit"
     ]
+  }
+}
+
+data "aws_iam_policy_document" "default_kms_policy" {
+  statement {
+    sid    = "AllowAliasCreation"
+    effect = "Allow"
+
+    actions = [
+      "kms:CreateAlias"
+    ]
+
+    principals {
+      type = "AWS"
+      identifiers = [
+        "arn:aws:iam::${aws_organizations_account.operations.id}:role/Admin"
+      ]
+    }
+    resources = [
+      "*"
+    ]
+
+    condition {
+      test     = "StringEquals"
+      variable = "kms:ViaService"
+      values   = ["ec2.${var.aws_default_region}.amazonaws.com"]
+    }
+
+    condition {
+      test     = "StringEquals"
+      variable = "kms:CallerAccount"
+
+      values = [
+        "${aws_organizations_account.operations.id}"
+      ]
+    }
+  }
+  statement {
+    sid    = "AllowAdministratorsToManageKey"
+    effect = "Allow"
+
+    actions = [
+      "kms:Create*",
+      "kms:Describe*",
+      "kms:Enable*",
+      "kms:List*",
+      "kms:Put*",
+      "kms:Update*",
+      "kms:Revoke*",
+      "kms:Disable*",
+      "kms:Get*",
+      "kms:Delete*",
+      "kms:TagResource",
+      "kms:UntagResource"
+    ]
+
+    resources = [
+      "*"
+    ]
+
+    principals {
+      type = "AWS"
+
+      identifiers = [
+        "arn:aws:iam::${aws_organizations_account.operations.id}:role/Admin"
+      ]
+    }
+  }
+  statement {
+    sid    = "AllowAccountsAndUsersToUseKey"
+    effect = "Allow"
+
+    actions = [
+      "kms:Encrypt",
+      "kms:Decrypt",
+      "kms:ReEncrypt*",
+      "kms:GenerateDataKey",
+      "kms:DescribeKey"
+    ]
+
+    resources = [
+      "*"
+    ]
+
+    principals {
+      type = "AWS"
+      identifiers = [
+        "arn:aws:iam::${aws_organizations_account.operations.id}:role/Admin",
+        "arn:aws:iam::${aws_organizations_account.operations.id}:role/Engineer",
+      ]
+    }
+
+    principals {
+      type = "Service"
+      identifiers = [
+        "logs.${var.aws_default_region}.amazonaws.com"
+      ]
+    }
+  }
+
+  statement {
+    sid    = "EnableIAMUserPermissions"
+    effect = "Allow"
+
+    actions = [
+      "kms:*"
+    ]
+
+    resources = [
+      "*"
+    ]
+
+    principals {
+      type = "AWS"
+      identifiers = [
+        "arn:aws:iam::${aws_organizations_account.operations.id}:root"
+      ]
+    }
   }
 }
