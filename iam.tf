@@ -162,120 +162,116 @@ data "aws_iam_policy_document" "security_audit_group" {
   }
 }
 
-data "aws_iam_policy_document" "default_kms_policy" {
-  statement {
-    sid    = "AllowAliasCreation"
-    effect = "Allow"
+module "iam-assume-roles-operations" {
+  source            = "./modules/iam-assume-roles"
+  master_account_id = "${var.master_account_id}"
 
-    actions = [
-      "kms:CreateAlias"
-    ]
-
-    principals {
-      type = "AWS"
-      identifiers = [
-        "arn:aws:iam::${aws_organizations_account.operations.id}:role/Admin"
-      ]
-    }
-    resources = [
-      "*"
-    ]
-
-    condition {
-      test     = "StringEquals"
-      variable = "kms:ViaService"
-      values   = ["ec2.${var.aws_default_region}.amazonaws.com"]
-    }
-
-    condition {
-      test     = "StringEquals"
-      variable = "kms:CallerAccount"
-
-      values = [
-        "${aws_organizations_account.operations.id}"
-      ]
-    }
+  providers = {
+    aws = "aws.operations"
   }
-  statement {
-    sid    = "AllowAdministratorsToManageKey"
-    effect = "Allow"
+}
 
-    actions = [
-      "kms:Create*",
-      "kms:Describe*",
-      "kms:Enable*",
-      "kms:List*",
-      "kms:Put*",
-      "kms:Update*",
-      "kms:Revoke*",
-      "kms:Disable*",
-      "kms:Get*",
-      "kms:Delete*",
-      "kms:TagResource",
-      "kms:UntagResource"
-    ]
+module "iam-assume-roles-development" {
+  source            = "./modules/iam-assume-roles"
+  master_account_id = "${var.master_account_id}"
 
-    resources = [
-      "*"
-    ]
-
-    principals {
-      type = "AWS"
-
-      identifiers = [
-        "arn:aws:iam::${aws_organizations_account.operations.id}:role/Admin"
-      ]
-    }
+  providers = {
+    aws = "aws.development"
   }
-  statement {
-    sid    = "AllowAccountsAndUsersToUseKey"
-    effect = "Allow"
+}
 
-    actions = [
-      "kms:Encrypt",
-      "kms:Decrypt",
-      "kms:ReEncrypt*",
-      "kms:GenerateDataKey",
-      "kms:DescribeKey"
-    ]
+module "iam-assume-roles-production" {
+  source            = "./modules/iam-assume-roles"
+  master_account_id = "${var.master_account_id}"
 
-    resources = [
-      "*"
-    ]
-
-    principals {
-      type = "AWS"
-      identifiers = [
-        "arn:aws:iam::${aws_organizations_account.operations.id}:role/Admin",
-        "arn:aws:iam::${aws_organizations_account.operations.id}:role/Engineer",
-      ]
-    }
-
-    principals {
-      type = "Service"
-      identifiers = [
-        "logs.${var.aws_default_region}.amazonaws.com"
-      ]
-    }
+  providers = {
+    aws = "aws.production"
   }
+}
 
-  statement {
-    sid    = "EnableIAMUserPermissions"
-    effect = "Allow"
+resource "aws_iam_group" "admin" {
+  name      = "Admin"
+  provider  = "aws.master"
+}
 
-    actions = [
-      "kms:*"
-    ]
+resource "aws_iam_group_policy" "mfa_admin" {
+  name      = "mfa-policy"
+  group     = "${aws_iam_group.admin.id}"
+  policy    = "${data.aws_iam_policy_document.mfa.json}"
+  provider  = "aws.master"
+}
 
-    resources = [
-      "*"
-    ]
+resource "aws_iam_group_policy" "admin_assume_role" {
+  name      = "admin-assume-role"
+  group     = "${aws_iam_group.admin.id}"
+  policy    = "${data.aws_iam_policy_document.admin_group.json}"
+  provider  = "aws.master"
+}
 
-    principals {
-      type = "AWS"
-      identifiers = [
-        "arn:aws:iam::${aws_organizations_account.operations.id}:root"
-      ]
-    }
-  }
+resource "aws_iam_group_policy_attachment" "admin_iam" {
+  group       = "${aws_iam_group.admin.id}"
+  policy_arn = "${var.iam_admin_arn}"
+  provider    = "aws.master"
+}
+
+resource "aws_iam_group_policy_attachment" "admin_billing" {
+  group       = "${aws_iam_group.admin.id}"
+  policy_arn  = "${var.billing_default_arn}"
+  provider    = "aws.master"
+}
+
+resource "aws_iam_group" "engineer" {
+  name      = "Engineer"
+  provider  = "aws.master"
+}
+
+resource "aws_iam_group_policy" "mfa_engineer" {
+  name      = "mfa-policy"
+  group     = "${aws_iam_group.engineer.id}"
+  policy    = "${data.aws_iam_policy_document.mfa.json}"
+  provider  = "aws.master"
+}
+
+resource "aws_iam_group_policy" "engineer_assume_role" {
+  name      = "engineer-assume-role"
+  group     = "${aws_iam_group.engineer.id}"
+  policy    = "${data.aws_iam_policy_document.engineer_group.json}"
+  provider  = "aws.master"
+}
+
+resource "aws_iam_group" "security_audit" {
+  name      = "Audit"
+  provider  = "aws.master"
+}
+
+resource "aws_iam_group_policy" "mfa_security" {
+  name      = "mfa-policy"
+  group     = "${aws_iam_group.security_audit.id}"
+  policy    = "${data.aws_iam_policy_document.mfa.json}"
+  provider  = "aws.master"
+}
+
+resource "aws_iam_group_policy" "security_audit_assume_role" {
+  name      = "security-audit-assume-role"
+  group     = "${aws_iam_group.security_audit.id}"
+  policy    = "${data.aws_iam_policy_document.security_audit_group.json}"
+  provider  = "aws.master"
+}
+
+resource "aws_iam_group" "finance" {
+  name      = "Finance"
+  provider  = "aws.master"
+}
+
+resource "aws_iam_group_policy" "mfa_finance" {
+  name      = "mfa-policy"
+  group     = "${aws_iam_group.finance.id}"
+  policy    = "${data.aws_iam_policy_document.mfa.json}"
+  provider  = "aws.master"
+}
+
+resource "aws_iam_group_policy_attachment" "billing_attach" {
+  group       = "${aws_iam_group.finance.id}"
+  policy_arn  = "${var.billing_default_arn}"
+  provider    = "aws.master"
 }
