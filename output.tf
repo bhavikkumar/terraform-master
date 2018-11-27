@@ -4,6 +4,12 @@ output "cloudtrail_bucket_id" {
   sensitive   = true
 }
 
+output "default_kms_key_arn" {
+  value       = "${aws_kms_key.default.arn}"
+  description = "Default KMS Key ARN"
+  sensitive   = true
+}
+
 output "development_account_alias" {
   value     = "${aws_iam_account_alias.development.account_alias}"
   sensitive = true

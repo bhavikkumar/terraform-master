@@ -110,6 +110,7 @@ tags | A map of tags to add to all resources | map | `{}` | no
 Name | Description
 ---- | -----------
 cloudtrail_bucket_id | The name of the cloudtrail bucket where all trails will be centralised
+default_kms_key_arn | The KMS Key id which can be used by all users and AWS services
 development_account_alias | The alias of the development account
 development_account_id | The development account id
 development_cloudtrail_log_arn | The ARN of the cloudtrail log for the development account
