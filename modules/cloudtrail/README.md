@@ -27,3 +27,4 @@ tags | A map of tags to add to all resources | map | `{}` | no
 ## Outputs
 Name | Description
 ---- | -----------
+cloudwatch_log_arn | The ARN of the cloudwatch log group
