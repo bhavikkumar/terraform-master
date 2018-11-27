@@ -184,3 +184,111 @@ data "aws_iam_policy_document" "security_audit_group" {
     ]
   }
 }
+
+module "iam-assume-roles-operations" {
+  source            = "./modules/iam-assume-roles"
+  master_account_id = "${var.master_account_id}"
+
+  providers = {
+    aws = "aws.operations"
+  }
+}
+
+module "iam-assume-roles-development" {
+  source            = "./modules/iam-assume-roles"
+  master_account_id = "${var.master_account_id}"
+
+  providers = {
+    aws = "aws.development"
+  }
+}
+
+module "iam-assume-roles-production" {
+  source            = "./modules/iam-assume-roles"
+  master_account_id = "${var.master_account_id}"
+
+  providers = {
+    aws = "aws.production"
+  }
+}
+
+resource "aws_iam_group" "admin" {
+  name      = "Admin"
+  provider  = "aws.master"
+}
+
+resource "aws_iam_group_policy" "mfa_admin" {
+  name      = "mfa-policy"
+  group     = "${aws_iam_group.admin.id}"
+  policy    = "${data.aws_iam_policy_document.mfa.json}"
+  provider  = "aws.master"
+}
+
+resource "aws_iam_group_policy" "admin_assume_role" {
+  name      = "admin-assume-role"
+  group     = "${aws_iam_group.admin.id}"
+  policy    = "${data.aws_iam_policy_document.admin_group.json}"
+  provider  = "aws.master"
+}
+
+resource "aws_iam_group_policy_attachment" "admin_billing" {
+  group       = "${aws_iam_group.admin.id}"
+  policy_arn  = "${var.billing_default_arn}"
+  provider    = "aws.master"
+}
+
+resource "aws_iam_group" "engineer" {
+  name      = "Engineer"
+  provider  = "aws.master"
+}
+
+resource "aws_iam_group_policy" "mfa_engineer" {
+  name      = "mfa-policy"
+  group     = "${aws_iam_group.engineer.id}"
+  policy    = "${data.aws_iam_policy_document.mfa.json}"
+  provider  = "aws.master"
+}
+
+resource "aws_iam_group_policy" "engineer_assume_role" {
+  name      = "engineer-assume-role"
+  group     = "${aws_iam_group.engineer.id}"
+  policy    = "${data.aws_iam_policy_document.engineer_group.json}"
+  provider  = "aws.master"
+}
+
+resource "aws_iam_group" "security_audit" {
+  name      = "Audit"
+  provider  = "aws.master"
+}
+
+resource "aws_iam_group_policy" "mfa_security" {
+  name      = "mfa-policy"
+  group     = "${aws_iam_group.security_audit.id}"
+  policy    = "${data.aws_iam_policy_document.mfa.json}"
+  provider  = "aws.master"
+}
+
+resource "aws_iam_group_policy" "security_audit_assume_role" {
+  name      = "security-audit-assume-role"
+  group     = "${aws_iam_group.security_audit.id}"
+  policy    = "${data.aws_iam_policy_document.security_audit_group.json}"
+  provider  = "aws.master"
+}
+
+resource "aws_iam_group" "finance" {
+  name      = "Finance"
+  provider  = "aws.master"
+}
+
+resource "aws_iam_group_policy" "mfa_finance" {
+  name      = "mfa-policy"
+  group     = "${aws_iam_group.finance.id}"
+  policy    = "${data.aws_iam_policy_document.mfa.json}"
+  provider  = "aws.master"
+}
+
+resource "aws_iam_group_policy_attachment" "billing_attach" {
+  group       = "${aws_iam_group.finance.id}"
+  policy_arn  = "${var.billing_default_arn}"
+  provider    = "aws.master"
+}

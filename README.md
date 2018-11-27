@@ -10,6 +10,7 @@ This terraform project initialises a account to become the root account of an AW
   - [x] Create a operations account
   - [x] Create a development account
   - [x] Create a production account
+  - [X] Create Cloudwatch Log Group for CloudTrail  
   - [x] Enable CloudTrail Logging
   - [x] Create Organisational SCP to Deny modification or deletion of CloudTrail
   - [x] Create Account Alias
@@ -23,6 +24,7 @@ This terraform project initialises a account to become the root account of an AW
 ### Operations Account
   - [x] Create a KMS Key for CloudTrail
   - [x] Create a encrypted S3 bucket for CloudTrail logs
+  - [X] Create Cloudwatch Log Group for CloudTrail   
   - [x] Enable CloudTrail Logging
   - [x] Create admin role
   - [x] Create engineer role
@@ -30,8 +32,10 @@ This terraform project initialises a account to become the root account of an AW
   - [x] Create a KMS Key for terraform
   - [x] Create a encrypted S3 bucket for terraform state
   - [x] Create a DynamoDB table for terraform state locking
+  - [x] Create a KMS Key for regular usage
 
 ### Development Account
+  - [X] Create Cloudwatch Log Group for CloudTrail  
   - [x] Enable CloudTrail Logging
   - [x] Create Account Alias
   - [x] Create admin role
@@ -39,6 +43,7 @@ This terraform project initialises a account to become the root account of an AW
   - [x] Create a security audit role
 
 ### Production Account
+  - [X] Create Cloudwatch Log Group for CloudTrail
   - [x] Enable CloudTrail Logging
   - [x] Create Account Alias
   - [x] Create admin role
@@ -107,12 +112,16 @@ Name | Description
 cloudtrail_bucket_id | The name of the cloudtrail bucket where all trails will be centralised
 development_account_alias | The alias of the development account
 development_account_id | The development account id
+development_cloudtrail_log_arn | The ARN of the cloudtrail log for the development account
 master_account_alias | The alias of the root account
 master_account_id | The root account id
+master_cloudtrail_log_arn | The ARN of the cloudtrail log for the master account
 operations_account_alias | The alias of the operations account
 operations_account_id | The operation account id
+operations_cloudtrail_log_arn | The ARN of the cloudtrail log for the operations account
 production_account_alias | The alias of the production account
 production_account_id | The production account id
+production_cloudtrail_log_arn | The ARN of the cloudtrail log for the production account
 terraform_bucket_id | The name of the terraform state bucket
 terraform_dynamodb_table_name | The name of the terraform dynamodb table
 terraform_kms_key_arn | The KMS Key id used by terraform to encrypt the s3 bucket at rest

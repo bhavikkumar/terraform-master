@@ -14,6 +14,11 @@ output "development_account_id" {
   sensitive = true
 }
 
+output "development_cloudtrail_log_arn" {
+  value     = "${module.cloudtrail-development.cloudwatch_log_arn}"
+  sensitive = true
+}
+
 output "master_account_id" {
   value     = "${var.master_account_id}"
   sensitive = true
@@ -24,13 +29,23 @@ output "master_account_alias" {
   sensitive = true
 }
 
+output "master_cloudtrail_log_arn" {
+  value     = "${module.cloudtrail-master.cloudwatch_log_arn}"
+  sensitive = true
+}
+
 output "operations_account_id" {
   value     = "${aws_organizations_account.operations.id}"
   sensitive = true
 }
 
 output "operations_account_alias" {
-  value = "${aws_iam_account_alias.operations.account_alias}"
+  value     = "${aws_iam_account_alias.operations.account_alias}"
+  sensitive = true
+}
+
+output "operations_cloudtrail_log_arn" {
+  value     = "${module.cloudtrail-operations.cloudwatch_log_arn}"
   sensitive = true
 }
 
@@ -41,6 +56,11 @@ output "production_account_alias" {
 
 output "production_account_id" {
   value     = "${aws_organizations_account.production.id}"
+  sensitive = true
+}
+
+output "production_cloudtrail_log_arn" {
+  value     = "${module.cloudtrail-production.cloudwatch_log_arn}"
   sensitive = true
 }
 
