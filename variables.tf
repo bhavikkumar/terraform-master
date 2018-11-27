@@ -12,11 +12,6 @@ variable "domain_name" {
   type = "string"
 }
 
-variable "iam_admin_arn" {
-  type    = "string"
-  default = "arn:aws:iam::aws:policy/IAMFullAccess"
-}
-
 variable "master_account_id" {
   type = "string"
 }
