@@ -1,3 +1,8 @@
+variable "cloudtrail_name" {
+  type = "string"
+  description = "The name of the trail"
+}
+
 variable "cloudtrail_kms_key" {
   type = "string"
   description = "The ARN of the KMS Key for CloudTrail"

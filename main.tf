@@ -278,6 +278,7 @@ module "cloudtrail" {
 
 module "cloudtrail-operations" {
   source             = "./modules/cloudtrail"
+  cloudtrail_name    = "operations"
   cloudtrail_kms_key = "${module.cloudtrail.kms_key_arn}"
   cloudwatch_kms_key = "${aws_kms_alias.default.arn}"
   s3_bucket          = "${module.cloudtrail.s3_bucket}"
@@ -288,48 +289,43 @@ module "cloudtrail-operations" {
   }
 }
 
-resource "aws_cloudtrail" "operations-cloudtrail" {
-  name                          = "cloudtrail"
-  s3_bucket_name                = "${module.cloudtrail.s3_bucket}"
-  is_multi_region_trail         = true
-  enable_log_file_validation    = true
-  kms_key_id                    = "${module.cloudtrail.kms_key_arn}"
-  include_global_service_events = true
-  tags                          = "${merge(local.common_tags, var.tags)}"
-  provider                      = "aws.operations"
+module "cloudtrail-master" {
+  source             = "./modules/cloudtrail"
+  cloudtrail_name    = "master"
+  cloudtrail_kms_key = "${module.cloudtrail.kms_key_arn}"
+  cloudwatch_kms_key = "${aws_kms_alias.default.arn}"
+  s3_bucket          = "${module.cloudtrail.s3_bucket}"
+  tags               = "${merge(local.common_tags, var.tags)}"
+
+  providers = {
+    aws = "aws.master"
+  }
 }
 
-resource "aws_cloudtrail" "master-cloudtrail" {
-  name                          = "cloudtrail"
-  s3_bucket_name                = "${module.cloudtrail.s3_bucket}"
-  is_multi_region_trail         = true
-  enable_log_file_validation    = true
-  kms_key_id                    = "${module.cloudtrail.kms_key_arn}"
-  include_global_service_events = true
-  tags                          = "${merge(local.common_tags, var.tags)}"
-  provider                      = "aws.master"
+module "cloudtrail-development" {
+  source             = "./modules/cloudtrail"
+  cloudtrail_name    = "development"
+  cloudtrail_kms_key = "${module.cloudtrail.kms_key_arn}"
+  cloudwatch_kms_key = "${aws_kms_alias.default.arn}"
+  s3_bucket          = "${module.cloudtrail.s3_bucket}"
+  tags               = "${merge(local.common_tags, var.tags)}"
+
+  providers = {
+    aws = "aws.development"
+  }
 }
 
-resource "aws_cloudtrail" "development-cloudtrail" {
-  name                          = "cloudtrail"
-  s3_bucket_name                = "${module.cloudtrail.s3_bucket}"
-  is_multi_region_trail         = true
-  enable_log_file_validation    = true
-  kms_key_id                    = "${module.cloudtrail.kms_key_arn}"
-  include_global_service_events = true
-  tags                          = "${merge(local.common_tags, var.tags)}"
-  provider                      = "aws.development"
-}
+module "cloudtrail-production" {
+  source             = "./modules/cloudtrail"
+  cloudtrail_name    = "production"
+  cloudtrail_kms_key = "${module.cloudtrail.kms_key_arn}"
+  cloudwatch_kms_key = "${aws_kms_alias.default.arn}"
+  s3_bucket          = "${module.cloudtrail.s3_bucket}"
+  tags               = "${merge(local.common_tags, var.tags)}"
 
-resource "aws_cloudtrail" "production-cloudtrail" {
-  name                          = "cloudtrail"
-  s3_bucket_name                = "${module.cloudtrail.s3_bucket}"
-  is_multi_region_trail         = true
-  enable_log_file_validation    = true
-  kms_key_id                    = "${module.cloudtrail.kms_key_arn}"
-  include_global_service_events = true
-  tags                          = "${merge(local.common_tags, var.tags)}"
-  provider                      = "aws.production"
+  providers = {
+    aws = "aws.production"
+  }
 }
 
 resource "aws_organizations_policy" "scp-policy" {

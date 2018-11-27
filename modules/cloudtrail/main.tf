@@ -52,7 +52,7 @@ resource "aws_cloudwatch_log_group" "cloudtrail" {
 }
 
 resource "aws_cloudtrail" "operations-cloudtrail" {
-  name                          = "cloudtrail"
+  name                          = "${var.cloudtrail_name}"
   cloud_watch_logs_role_arn     = "${aws_iam_role.cloudtrail.arn}"
   cloud_watch_logs_group_arn    = "${aws_cloudwatch_log_group.cloudtrail.arn}"
   s3_bucket_name                = "${var.s3_bucket}"
