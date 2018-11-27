@@ -1,20 +1,21 @@
-variable "cloudtrail_name" {
-  type = "string"
-  description = "The name of the trail"
-}
-
 variable "cloudtrail_kms_key" {
-  type = "string"
+  type        = "string"
   description = "The ARN of the KMS Key for CloudTrail"
 }
 
+variable "cloudtrail_name" {
+  type        = "string"
+  description = "The name of the trail"
+  default     = "cloudtrail"
+}
+
 variable "cloudwatch_kms_key" {
-  type = "string"
+  type        = "string"
   description = "The ARN of the KMS Key for CloudWatch Logs"
 }
 
 variable "s3_bucket" {
-  type = "string"
+  type        = "string"
   description = "The s3 bucket where cloudtrail logs will be stored"
 }
 
