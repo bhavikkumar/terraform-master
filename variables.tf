@@ -25,6 +25,11 @@ variable "profile" {
   default = "default"
 }
 
+variable "read_only_default_arn" {
+  type    = "string"
+  default = "arn:aws:iam::aws:policy/ReadOnlyAccess"
+}
+
 variable "tags" {
   type        = "map"
   description = "A map of tags to add to all resources"

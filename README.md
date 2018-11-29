@@ -18,8 +18,6 @@ This terraform project initialises a account to become the root account of an AW
   - [x] Create a engineer group with enforced MFA
   - [x] Create a finance group with enforced MFA
   - [x] Create a security audit group with enforced MFA
-  - [x] Create a read only role
-  - [x] Create a security audit role
 
 ### Operations Account
   - [x] Create a KMS Key for CloudTrail
@@ -104,6 +102,7 @@ domain_name | The domain name which will be used as the suffix for s3 buckets an
 master_account_id | The account id which will be the root organisation | string | - | yes
 prefix | The prefix to use for resources | string | - | yes
 profile | A profile in ~/.aws/credentials which is used for terraform | string | `default` | no
+read_only_default_arn | The managed ARN which will be attached to groups allowed read only access | `arn:aws:iam::aws:policy/ReadOnlyAccess` | no
 tags | A map of tags to add to all resources | map | `{}` | no
 
 ## Outputs

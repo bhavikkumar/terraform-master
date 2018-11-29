@@ -185,6 +185,18 @@ data "aws_iam_policy_document" "security_audit_group" {
   }
 }
 
+resource "aws_iam_account_password_policy" "strict" {
+  minimum_password_length         = 12
+  require_lowercase_characters    = true
+  require_numbers                 = true
+  require_uppercase_characters    = true
+  require_symbols                 = true
+  allow_users_to_change_password  = true
+  password_reuse_prevention       = true
+  max_password_age                = 0
+  provider                        = "aws.master"
+}
+
 module "iam-assume-roles-operations" {
   source            = "./modules/iam-assume-roles"
   master_account_id = "${var.master_account_id}"
@@ -231,9 +243,9 @@ resource "aws_iam_group_policy" "admin_assume_role" {
   provider  = "aws.master"
 }
 
-resource "aws_iam_group_policy_attachment" "admin_billing" {
+resource "aws_iam_group_policy_attachment" "admin_read_only" {
   group       = "${aws_iam_group.admin.id}"
-  policy_arn  = "${var.billing_default_arn}"
+  policy_arn  = "${var.read_only_default_arn}"
   provider    = "aws.master"
 }
 
