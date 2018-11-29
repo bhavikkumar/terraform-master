@@ -243,6 +243,12 @@ resource "aws_iam_group_policy" "admin_assume_role" {
   provider  = "aws.master"
 }
 
+resource "aws_iam_group_policy_attachment" "admin_billing" {
+  group       = "${aws_iam_group.admin.id}"
+  policy_arn  = "${var.billing_default_arn}"
+  provider    = "aws.master"
+}
+
 resource "aws_iam_group_policy_attachment" "admin_read_only" {
   group       = "${aws_iam_group.admin.id}"
   policy_arn  = "${var.read_only_default_arn}"
