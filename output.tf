@@ -20,9 +20,8 @@ output "development_account_id" {
   sensitive = true
 }
 
-output "development_cloudtrail_log_arn" {
-  value     = "${module.cloudtrail-development.cloudwatch_log_arn}"
-  sensitive = true
+output "development_cloudtrail_log_name" {
+  value     = "${module.cloudtrail-development.cloudwatch_log_group_name}"
 }
 
 output "master_account_id" {
@@ -35,9 +34,8 @@ output "master_account_alias" {
   sensitive = true
 }
 
-output "master_cloudtrail_log_arn" {
-  value     = "${module.cloudtrail-master.cloudwatch_log_arn}"
-  sensitive = true
+output "master_cloudtrail_log_name" {
+  value     = "${module.cloudtrail-master.cloudwatch_log_group_name}"
 }
 
 output "operations_account_id" {
@@ -50,9 +48,8 @@ output "operations_account_alias" {
   sensitive = true
 }
 
-output "operations_cloudtrail_log_arn" {
-  value     = "${module.cloudtrail-operations.cloudwatch_log_arn}"
-  sensitive = true
+output "operations_cloudtrail_log_name" {
+  value     = "${module.cloudtrail-operations.cloudwatch_log_group_name}"
 }
 
 output "production_account_alias" {
@@ -65,9 +62,8 @@ output "production_account_id" {
   sensitive = true
 }
 
-output "production_cloudtrail_log_arn" {
-  value     = "${module.cloudtrail-production.cloudwatch_log_arn}"
-  sensitive = true
+output "production_cloudtrail_log_name" {
+  value     = "${module.cloudtrail-production.cloudwatch_log_group_name}"
 }
 
 output "terraform_bucket_id" {

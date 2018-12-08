@@ -112,16 +112,16 @@ cloudtrail_bucket_id | The name of the cloudtrail bucket where all trails will b
 default_kms_key_arn | The KMS Key id which can be used by all users and AWS services
 development_account_alias | The alias of the development account
 development_account_id | The development account id
-development_cloudtrail_log_arn | The ARN of the cloudtrail log for the development account
+development_cloudtrail_log_name | The name of the cloudtrail log for the development account
 master_account_alias | The alias of the root account
 master_account_id | The root account id
-master_cloudtrail_log_arn | The ARN of the cloudtrail log for the master account
+master_cloudtrail_log_name | The name of the cloudtrail log for the master account
 operations_account_alias | The alias of the operations account
 operations_account_id | The operation account id
-operations_cloudtrail_log_arn | The ARN of the cloudtrail log for the operations account
+operations_cloudtrail_log_name | The name of the cloudtrail log for the operations account
 production_account_alias | The alias of the production account
 production_account_id | The production account id
-production_cloudtrail_log_arn | The ARN of the cloudtrail log for the production account
+production_cloudtrail_log_name | The name of the cloudtrail log for the production account
 terraform_bucket_id | The name of the terraform state bucket
 terraform_dynamodb_table_name | The name of the terraform dynamodb table
 terraform_kms_key_arn | The KMS Key id used by terraform to encrypt the s3 bucket at rest
