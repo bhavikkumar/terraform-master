@@ -153,6 +153,20 @@ data "aws_iam_policy_document" "admin_group" {
       "*"
     ]
   }
+
+  statement {
+    sid    = "AllowAdminsToManageCloudWatchSubscriptions"
+    effect = "Allow"
+
+    actions = [
+      "logs:DescribeSubscriptionFilters",
+      "logs:PutSubscriptionFilter"
+    ]
+
+    resources = [
+      "*"
+    ]
+  }
 }
 
 data "aws_iam_policy_document" "engineer_group" {
