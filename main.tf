@@ -1,6 +1,6 @@
 provider "aws" {
   region                      = "${var.aws_default_region}"
-  version                     = "~> 1.48.0"
+  version                     = "~> 1.51.0"
   profile                     = "${var.profile}"
   skip_credentials_validation = true
 }
