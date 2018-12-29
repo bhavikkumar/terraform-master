@@ -9,9 +9,14 @@ variable "cloudtrail_name" {
   default     = "cloudtrail"
 }
 
-variable "cloudwatch_kms_key" {
-  type        = "string"
-  description = "The ARN of the KMS Key for CloudWatch Logs"
+variable "cloudwatch_log_retention_period" {
+  description = "The number of days to retain the logs for in cloudwatch"
+  default     = 1
+}
+
+variable "is_organization_trail" {
+  description = "Specifies whether the trail is an AWS Organizations trail."
+  default     = true
 }
 
 variable "s3_bucket" {

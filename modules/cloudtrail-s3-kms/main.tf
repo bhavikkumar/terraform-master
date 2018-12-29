@@ -15,8 +15,8 @@ data "aws_iam_policy_document" "cloudtrail_kms_policy" {
       type = "AWS"
 
       identifiers = [
-        "arn:aws:iam::${var.cloudtrail_account_id}:role/OrganizationAccountAccessRole",
-        "arn:aws:iam::${var.cloudtrail_account_id}:role/Admin"
+        "arn:aws:iam::${var.operations_account_id}:role/OrganizationAccountAccessRole",
+        "arn:aws:iam::${var.operations_account_id}:role/Admin"
       ]
     }
 
@@ -34,7 +34,7 @@ data "aws_iam_policy_document" "cloudtrail_kms_policy" {
       variable  = "kms:CallerAccount"
 
       values = [
-        "${var.cloudtrail_account_id}"
+        "${var.operations_account_id}"
       ]
     }
   }
@@ -67,8 +67,8 @@ data "aws_iam_policy_document" "cloudtrail_kms_policy" {
       type = "AWS"
 
       identifiers = [
-        "arn:aws:iam::${var.cloudtrail_account_id}:role/OrganizationAccountAccessRole",
-        "arn:aws:iam::${var.cloudtrail_account_id}:role/Admin"
+        "arn:aws:iam::${var.operations_account_id}:role/OrganizationAccountAccessRole",
+        "arn:aws:iam::${var.operations_account_id}:role/Admin"
       ]
     }
   }
@@ -118,7 +118,7 @@ data "aws_iam_policy_document" "cloudtrail_kms_policy" {
       variable  = "kms:EncryptionContext:aws:cloudtrail:arn"
 
       values = [
-        "${formatlist("arn:aws:cloudtrail:*:%s:trail/*", var.account_id_list)}"
+          "arn:aws:cloudtrail:*:${var.cloudtrail_account_id}:trail/*"
       ]
     }
   }
@@ -138,9 +138,9 @@ data "aws_iam_policy_document" "cloudtrail_kms_policy" {
       type = "AWS"
 
       identifiers = [
-        "arn:aws:iam::${var.cloudtrail_account_id}:role/Admin",
-        "arn:aws:iam::${var.cloudtrail_account_id}:role/Engineer",
-        "arn:aws:iam::${var.cloudtrail_account_id}:role/SecurityAudit"
+        "arn:aws:iam::${var.operations_account_id}:role/Admin",
+        "arn:aws:iam::${var.operations_account_id}:role/Engineer",
+        "arn:aws:iam::${var.operations_account_id}:role/SecurityAudit"
       ]
     }
     condition {
@@ -185,7 +185,7 @@ data "aws_iam_policy_document" "cloudtrail_s3_policy" {
     ]
 
     resources = [
-      "${formatlist("arn:aws:s3:::%s/AWSLogs/%s/*", aws_s3_bucket.cloudtrail.id, var.account_id_list)}"
+      "arn:aws:s3:::${aws_s3_bucket.cloudtrail.id}/AWSLogs/*"
     ]
 
     principals {
@@ -247,11 +247,11 @@ data "aws_iam_policy_document" "cloudtrail_s3_policy" {
       type = "AWS"
 
       identifiers = [
-        "arn:aws:sts::${var.cloudtrail_account_id}:assumed-role/Admin/terraform",
-        "arn:aws:iam::${var.cloudtrail_account_id}:role/Admin",
-        "arn:aws:sts::${var.cloudtrail_account_id}:assumed-role/OrganizationAccountAccessRole/terraform",
-        "arn:aws:iam::${var.cloudtrail_account_id}:role/OrganizationAccountAccessRole",
-        "arn:aws:iam::${var.cloudtrail_account_id}:root"
+        "arn:aws:sts::${var.operations_account_id}:assumed-role/Admin/terraform",
+        "arn:aws:iam::${var.operations_account_id}:role/Admin",
+        "arn:aws:sts::${var.operations_account_id}:assumed-role/OrganizationAccountAccessRole/terraform",
+        "arn:aws:iam::${var.operations_account_id}:role/OrganizationAccountAccessRole",
+        "arn:aws:iam::${var.operations_account_id}:root"
       ]
     }
   }

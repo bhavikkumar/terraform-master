@@ -1,7 +1,3 @@
-variable "account_id_list" {
-  type = "list"
-}
-
 variable "aws_region" {
   type = "string"
 }
@@ -11,6 +7,10 @@ variable "cloudtrail_account_id" {
 }
 
 variable "domain_name" {
+  type = "string"
+}
+
+variable "operations_account_id" {
   type = "string"
 }
 

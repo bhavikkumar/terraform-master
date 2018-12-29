@@ -47,16 +47,16 @@ resource "aws_iam_role_policy" "cloudwatch_write" {
 resource "aws_cloudwatch_log_group" "cloudtrail" {
   name              = "CloudTrail"
   retention_in_days = 1
-  kms_key_id        = "${var.cloudwatch_kms_key}"
   tags              = "${var.tags}"
 }
 
-resource "aws_cloudtrail" "operations-cloudtrail" {
+resource "aws_cloudtrail" "cloudtrail" {
   name                          = "${var.cloudtrail_name}"
   cloud_watch_logs_role_arn     = "${aws_iam_role.cloudtrail.arn}"
   cloud_watch_logs_group_arn    = "${aws_cloudwatch_log_group.cloudtrail.arn}"
   s3_bucket_name                = "${var.s3_bucket}"
   is_multi_region_trail         = true
+  is_organization_trail         = "${var.is_organization_trail}"
   enable_log_file_validation    = true
   kms_key_id                    = "${var.cloudtrail_kms_key}"
   include_global_service_events = true

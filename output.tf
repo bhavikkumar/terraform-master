@@ -1,5 +1,5 @@
 output "cloudtrail_bucket_id" {
-  value       = "${module.cloudtrail.s3_bucket}"
+  value       = "${module.cloudtrail-s3-kms.s3_bucket}"
   description = "CloudTrail bucket ID"
   sensitive   = true
 }
@@ -20,10 +20,6 @@ output "development_account_id" {
   sensitive = true
 }
 
-output "development_cloudtrail_log_name" {
-  value     = "${module.cloudtrail-development.cloudwatch_log_group_name}"
-}
-
 output "master_account_id" {
   value     = "${var.master_account_id}"
   sensitive = true
@@ -32,10 +28,6 @@ output "master_account_id" {
 output "master_account_alias" {
   value     = "${aws_iam_account_alias.master.account_alias}"
   sensitive = true
-}
-
-output "master_cloudtrail_log_name" {
-  value     = "${module.cloudtrail-master.cloudwatch_log_group_name}"
 }
 
 output "operations_account_id" {
@@ -48,8 +40,8 @@ output "operations_account_alias" {
   sensitive = true
 }
 
-output "operations_cloudtrail_log_name" {
-  value     = "${module.cloudtrail-operations.cloudwatch_log_group_name}"
+output "organization_cloudtrail_log_name" {
+  value     = "${module.organization_cloudtrail.cloudwatch_log_group_name}"
 }
 
 output "production_account_alias" {
@@ -60,10 +52,6 @@ output "production_account_alias" {
 output "production_account_id" {
   value     = "${aws_organizations_account.production.id}"
   sensitive = true
-}
-
-output "production_cloudtrail_log_name" {
-  value     = "${module.cloudtrail-production.cloudwatch_log_group_name}"
 }
 
 output "terraform_bucket_id" {
