@@ -2,8 +2,6 @@
 
 This terraform project initialises a account to become the root account of an AWS Organisation.
 
-![architecture](https://raw.githubusercontent.com/bhavikkumar/terraform-master/master/architecture.png)
-
 ### Master Account
   - [x] Enable strict password policy
   - [x] Enable AWS Organisations
