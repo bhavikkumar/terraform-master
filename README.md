@@ -2,44 +2,6 @@
 
 This terraform project initialises a account to become the root account of an AWS Organisation.
 
-### Master Account
-  - [x] Enable strict password policy
-  - [x] Enable AWS Organisations
-  - [x] Create a operations account
-  - [x] Create a development account
-  - [x] Create a production account
-  - [x] Create Account Alias
-  - [X] Create Cloudwatch Log Group for CloudTrail  
-  - [x] Enable CloudTrail Logging for the organisation
-  - [x] Create Organisational SCP to Deny modification or deletion of CloudTrail
-  - [x] Create a admin group with enforced MFA
-  - [x] Create a engineer group with enforced MFA
-  - [x] Create a finance group with enforced MFA
-  - [x] Create a security audit group with enforced MFA
-
-### Operations Account
-  - [x] Create a KMS Key for CloudTrail
-  - [x] Create a encrypted S3 bucket for CloudTrail logs
-  - [x] Create admin role
-  - [x] Create engineer role
-  - [x] Create a security audit role
-  - [x] Create a KMS Key for terraform
-  - [x] Create a encrypted S3 bucket for terraform state
-  - [x] Create a DynamoDB table for terraform state locking
-  - [x] Create a KMS Key for regular usage
-
-### Development Account
-  - [x] Create Account Alias
-  - [x] Create admin role
-  - [x] Create engineer role
-  - [x] Create a security audit role
-
-### Production Account
-  - [x] Create Account Alias
-  - [x] Create admin role
-  - [x] Create engineer role
-  - [x] Create a security audit role
-
 ## Initalise Master Account and Setup Terraform
 
 The following steps are required initalise the master account and terraforms first run. Best practice is to create a `tfvars` file to supply the variables. The `*.tfvars.example` file can be renamed to `*.tfvars` and updated with the appropriate variables.
