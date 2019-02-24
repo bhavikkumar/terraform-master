@@ -13,6 +13,22 @@ provider "aws" {
 }
 
 provider "aws" {
+  alias   = "identity"
+  region  = "${var.aws_default_region}"
+  profile = "${var.profile}"
+
+  allowed_account_ids = [
+    "${var.master_account_id}",
+    "${aws_organizations_account.identity.id}"
+  ]
+
+  assume_role {
+    role_arn      = "arn:aws:iam::${aws_organizations_account.identity.id}:role/OrganizationAccountAccessRole"
+    session_name  = "terraform"
+  }
+}
+
+provider "aws" {
   alias   = "operations"
   region  = "${var.aws_default_region}"
   profile = "${var.profile}"
@@ -77,9 +93,15 @@ locals {
 resource "aws_organizations_organization" "org" {
   aws_service_access_principals = [
     "cloudtrail.amazonaws.com"
-  ]  
+  ]
   feature_set = "ALL"
   provider    = "aws.master"
+}
+
+resource "aws_organizations_account" "identity" {
+  name      = "${var.prefix}-identity"
+  email     = "4d3d4429-00b8-4916-88a6-190f4968e6fc@${var.domain_name}"
+  provider  = "aws.master"
 }
 
 resource "aws_organizations_account" "operations" {
@@ -103,6 +125,11 @@ resource "aws_organizations_account" "production" {
 resource "aws_iam_account_alias" "master" {
   account_alias = "${var.prefix}-master"
   provider      = "aws.master"
+}
+
+resource "aws_iam_account_alias" "identity" {
+  account_alias = "${var.prefix}-ident"
+  provider      = "aws.identity"
 }
 
 resource "aws_iam_account_alias" "operations" {
