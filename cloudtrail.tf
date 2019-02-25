@@ -22,3 +22,11 @@ module "organization_cloudtrail" {
     aws = "aws.master"
   }
 }
+
+resource "aws_cloudwatch_log_subscription_filter" "cloudtrail_log_filter" {
+  name            = "cloudtrail_log_filter"
+  log_group_name  = "${module.organization_cloudtrail.cloudwatch_log_group_name}"
+  filter_pattern  = ""
+  destination_arn = "${aws_cloudwatch_log_destination.log_destination.arn}"
+  provider        = "aws.master"
+}

@@ -20,6 +20,21 @@ output "development_account_id" {
   sensitive = true
 }
 
+output "identity_account_alias" {
+  value     = "${aws_iam_account_alias.identity.account_alias}"
+  sensitive = true
+}
+
+output "identity_account_id" {
+  value     = "${aws_organizations_account.identity.id}"
+  sensitive = true
+}
+
+output "log_destination_arn" {
+  value       = "${aws_cloudwatch_log_destination.log_destination.arn}"
+  description = "The log destination where all logs should be sent"
+}
+
 output "master_account_id" {
   value     = "${var.master_account_id}"
   sensitive = true
