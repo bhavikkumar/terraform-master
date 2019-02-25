@@ -11,7 +11,7 @@ variable "cloudtrail_name" {
 
 variable "cloudwatch_log_retention_period" {
   description = "The number of days to retain the logs for in cloudwatch"
-  default     = 1
+  default     = 14
 }
 
 variable "is_organization_trail" {

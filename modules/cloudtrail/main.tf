@@ -46,7 +46,7 @@ resource "aws_iam_role_policy" "cloudwatch_write" {
 
 resource "aws_cloudwatch_log_group" "cloudtrail" {
   name              = "CloudTrail"
-  retention_in_days = 1
+  retention_in_days = "${var.cloudwatch_log_retention_period}"
   tags              = "${var.tags}"
 }
 
