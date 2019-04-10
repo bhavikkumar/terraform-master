@@ -83,7 +83,6 @@ data "aws_iam_policy_document" "default_kms_policy" {
       type = "AWS"
       identifiers = [
         "arn:aws:iam::${aws_organizations_account.operations.id}:role/Admin",
-        "arn:aws:iam::${aws_organizations_account.operations.id}:role/Engineer",
       ]
     }
 

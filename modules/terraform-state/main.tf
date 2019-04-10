@@ -92,7 +92,6 @@ data "aws_iam_policy_document" "terraform_kms_policy" {
       identifiers = [
         "arn:aws:iam::${var.account_id}:role/OrganizationAccountAccessRole",
         "arn:aws:iam::${var.account_id}:role/Admin",
-        "arn:aws:iam::${var.account_id}:role/Engineer"
       ]
     }
   }

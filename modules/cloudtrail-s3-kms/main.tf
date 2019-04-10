@@ -139,8 +139,6 @@ data "aws_iam_policy_document" "cloudtrail_kms_policy" {
 
       identifiers = [
         "arn:aws:iam::${var.operations_account_id}:role/Admin",
-        "arn:aws:iam::${var.operations_account_id}:role/Engineer",
-        "arn:aws:iam::${var.operations_account_id}:role/SecurityAudit"
       ]
     }
     condition {
