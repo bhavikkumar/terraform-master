@@ -28,5 +28,6 @@ resource "aws_cloudwatch_log_subscription_filter" "cloudtrail_log_filter" {
   log_group_name  = "${module.organization_cloudtrail.cloudwatch_log_group_name}"
   filter_pattern  = ""
   destination_arn = "${aws_cloudwatch_log_destination.log_destination.arn}"
+  distribution    = "ByLogStream"
   provider        = "aws.master"
 }
