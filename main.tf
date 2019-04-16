@@ -90,6 +90,18 @@ locals {
   }
 }
 
+module "terraform" {
+  source      = "./modules/terraform-state"
+  aws_region  = "${var.aws_default_region}"
+  account_id  = "${aws_organizations_account.operations.id}"
+  domain_name = "${var.domain_name}"
+  tags        = "${merge(local.common_tags, var.tags)}"
+
+  providers = {
+    aws = "aws.operations"
+  }
+}
+
 resource "aws_organizations_organization" "org" {
   aws_service_access_principals = [
     "cloudtrail.amazonaws.com"
@@ -147,6 +159,33 @@ resource "aws_iam_account_alias" "production" {
   provider      = "aws.production"
 }
 
+module "iam-assume-roles-operations" {
+  source            = "./modules/iam-assume-roles"
+  master_account_id = "${var.master_account_id}"
+
+  providers = {
+    aws = "aws.operations"
+  }
+}
+
+module "iam-assume-roles-development" {
+  source            = "./modules/iam-assume-roles"
+  master_account_id = "${var.master_account_id}"
+
+  providers = {
+    aws = "aws.development"
+  }
+}
+
+module "iam-assume-roles-production" {
+  source            = "./modules/iam-assume-roles"
+  master_account_id = "${var.master_account_id}"
+
+  providers = {
+    aws = "aws.production"
+  }
+}
+
 resource "aws_organizations_policy" "scp-policy" {
   name        = "ProtectAccounts"
   description = "Deny anyone from doing destructive actions"
@@ -169,16 +208,4 @@ resource "aws_organizations_policy" "scp-policy" {
 }
 CONTENT
   provider = "aws.master"
-}
-
-module "terraform" {
-  source      = "./modules/terraform-state"
-  aws_region  = "${var.aws_default_region}"
-  account_id  = "${aws_organizations_account.operations.id}"
-  domain_name = "${var.domain_name}"
-  tags        = "${merge(local.common_tags, var.tags)}"
-
-  providers = {
-    aws = "aws.operations"
-  }
 }

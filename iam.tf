@@ -97,7 +97,8 @@ data "aws_iam_policy_document" "mfa" {
       "iam:ListServiceSpecificCredentials",
       "iam:ListMFADevices",
       "iam:GetAccountSummary",
-      "sts:GetSessionToken"
+      "sts:GetSessionToken",
+      "iam:CreateLoginProfile"
     ]
 
     not_resources = [
@@ -113,11 +114,9 @@ data "aws_iam_policy_document" "mfa" {
       ]
     }
   }
-
-  provider = "aws.identity"
 }
 
-data "aws_iam_policy_document" "admin_group" {
+data "aws_iam_policy_document" "assume_admin" {
   statement {
     sid     = "AllowUsersToAssumeTheAdminRole"
     effect  = "Allow"
@@ -130,7 +129,9 @@ data "aws_iam_policy_document" "admin_group" {
       "arn:aws:iam::*:role/Admin",
     ]
   }
+}
 
+data "aws_iam_policy_document" "manage_users" {
   statement {
     sid    = "AllowAdminsToManageUsers"
     effect = "Allow"
@@ -146,7 +147,8 @@ data "aws_iam_policy_document" "admin_group" {
       "iam:DeleteSSHPublicKey",
       "iam:DeleteUser",
       "iam:DeleteVirtualMFADevice",
-      "iam:RemoveUserFromGroup"
+      "iam:RemoveUserFromGroup",
+      "iam:ChangePassword"
     ]
 
     resources = [
@@ -167,31 +169,11 @@ resource "aws_iam_account_password_policy" "strict" {
   provider                        = "aws.identity"
 }
 
-module "iam-assume-roles-operations" {
-  source            = "./modules/iam-assume-roles"
-  master_account_id = "${var.master_account_id}"
-
-  providers = {
-    aws = "aws.operations"
-  }
-}
-
-module "iam-assume-roles-development" {
-  source            = "./modules/iam-assume-roles"
-  master_account_id = "${var.master_account_id}"
-
-  providers = {
-    aws = "aws.development"
-  }
-}
-
-module "iam-assume-roles-production" {
-  source            = "./modules/iam-assume-roles"
-  master_account_id = "${var.master_account_id}"
-
-  providers = {
-    aws = "aws.production"
-  }
+resource "aws_iam_policy" "mfa_policy" {
+  name        = "EnforceMFA"
+  path        = "/"
+  description = "Policy which enforces MFA while allowing users to manage MFA devices"
+  policy      = "${data.aws_iam_policy_document.mfa.json}"
 }
 
 resource "aws_iam_group" "admin" {
@@ -199,17 +181,23 @@ resource "aws_iam_group" "admin" {
   provider  = "aws.identity"
 }
 
-resource "aws_iam_group_policy" "mfa_admin" {
-  name      = "mfa-policy"
-  group     = "${aws_iam_group.admin.id}"
-  policy    = "${data.aws_iam_policy_document.mfa.json}"
-  provider  = "aws.identity"
-}
-
 resource "aws_iam_group_policy" "admin_assume_role" {
   name      = "admin-assume-role"
   group     = "${aws_iam_group.admin.id}"
-  policy    = "${data.aws_iam_policy_document.admin_group.json}"
+  policy    = "${data.aws_iam_policy_document.assume_admin.json}"
+  provider  = "aws.identity"
+}
+
+resource "aws_iam_group_policy" "manage_users" {
+  name      = "admin-can-manager-users"
+  group     = "${aws_iam_group.admin.id}"
+  policy    = "${data.aws_iam_policy_document.assume_admin.json}"
+  provider  = "aws.identity"
+}
+
+resource "aws_iam_group_policy_attachment" "enforce_mfa" {
+  group       = "${aws_iam_group.admin.id}"
+  policy_arn  = "${aws_iam_policy.mfa_policy.arn}"
   provider  = "aws.identity"
 }
 
