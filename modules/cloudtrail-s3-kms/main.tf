@@ -122,6 +122,7 @@ data "aws_iam_policy_document" "cloudtrail_kms_policy" {
       ]
     }
   }
+
   statement {
     sid     = "AllowDecryptionOfCloudTrailLogs"
     effect  = "Allow"
@@ -150,6 +151,32 @@ data "aws_iam_policy_document" "cloudtrail_kms_policy" {
       ]
     }
   }
+
+  statement {
+    sid     = "AllowCloudWatchLogsToEncrypt"
+    effect  = "Allow"
+
+    actions = [
+      "kms:Encrypt",
+      "kms:Decrypt",
+      "kms:ReEncrypt*",
+      "kms:GenerateDataKey",
+      "kms:DescribeKey"
+    ]
+
+    resources = [
+      "*"
+    ]
+
+    principals {
+      type = "Service"
+
+      identifiers = [
+        "logs.${var.aws_region}.amazonaws.com"
+      ]
+    }
+  }
+
 }
 
 data "aws_iam_policy_document" "cloudtrail_s3_policy" {
