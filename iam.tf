@@ -174,6 +174,7 @@ resource "aws_iam_policy" "mfa_policy" {
   path        = "/"
   description = "Policy which enforces MFA while allowing users to manage MFA devices"
   policy      = "${data.aws_iam_policy_document.mfa.json}"
+  provider  = "aws.identity"
 }
 
 resource "aws_iam_group" "admin" {
@@ -191,7 +192,7 @@ resource "aws_iam_group_policy" "admin_assume_role" {
 resource "aws_iam_group_policy" "manage_users" {
   name      = "admin-can-manager-users"
   group     = "${aws_iam_group.admin.id}"
-  policy    = "${data.aws_iam_policy_document.assume_admin.json}"
+  policy    = "${data.aws_iam_policy_document.manage_users.json}"
   provider  = "aws.identity"
 }
 
