@@ -116,6 +116,31 @@ data "aws_iam_policy_document" "default_kms_policy" {
       ]
     }
   }
+
+  statement {
+    sid    = "AllowAttachmentOfPersistentResources"
+    effect = "Allow"
+
+    actions = [
+      "kms:CreateGrant",
+      "kms:ListGrants",
+      "kms:RevokeGrant"
+    ]
+
+    resources = [
+      "*"
+    ]
+
+    principals {
+      type = "AWS"
+      identifiers = [
+        "arn:aws:iam::${aws_organizations_account.operations.id}:root",
+        "arn:aws:iam::${var.master_account_id}:root",
+        "arn:aws:iam::${aws_organizations_account.development.id}:root",
+        "arn:aws:iam::${aws_organizations_account.production.id}:root"
+      ]
+    }
+  }
 }
 
 resource "aws_kms_key" "default" {
