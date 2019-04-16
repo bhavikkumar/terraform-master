@@ -1,3 +1,8 @@
+output "artifact_bucket" {
+  value = "${aws_s3_bucket.artifact_bucket.id}"
+  description = "S3 Bucket used for artifact storage"
+}
+
 output "cloudtrail_bucket_id" {
   value       = "${module.cloudtrail-s3-kms.s3_bucket}"
   description = "CloudTrail bucket ID"
@@ -83,4 +88,16 @@ output "terraform_kms_key_arn" {
   value       = "${module.terraform.kms_key_arn}"
   description = "Terraform KMS Key ARN"
   sensitive   = true
+}
+
+output "travis_ci_access_key_id" {
+  value       = "${aws_iam_access_key.travis_ci.id}"
+  description = "The Travis CI User Access Key ID"
+  sensitive   = true
+}
+
+output "travis_ci_secret_access_key" {
+  value     = "${aws_iam_access_key.travis_ci.secret}"
+  description = "The Travis CI User Secret Access Key"
+  sensitive = true
 }
