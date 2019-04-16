@@ -118,3 +118,73 @@ resource "aws_cloudwatch_log_destination_policy" "log_destination_policy" {
   access_policy    = "${data.aws_iam_policy_document.log_destination_policy.json}"
   provider   = "aws.operations"
 }
+
+module "retention-period-master" {
+  source               = "./modules/cloudwatch-retention-period-lambda"
+  kms_key_arn          = "${aws_kms_key.default.arn}"
+  log_retention_period = 14
+  s3_bucket            = "artifact.bhavik.io"
+  s3_folder            = "lambda"
+  tags                 = "${merge(local.common_tags, var.tags)}"
+  app_version          = "1.0.2"
+
+  providers = {
+    aws = "aws.master"
+  }
+}
+
+module "retention-period-ops" {
+  source               = "./modules/cloudwatch-retention-period-lambda"
+  kms_key_arn          = "${aws_kms_key.default.arn}"
+  log_retention_period = 14
+  s3_bucket            = "artifact.bhavik.io"
+  s3_folder            = "lambda"
+  tags                 = "${merge(local.common_tags, var.tags)}"
+  app_version          = "1.0.2"
+
+  providers = {
+    aws = "aws.operations"
+  }
+}
+
+module "retention-period-identity" {
+  source               = "./modules/cloudwatch-retention-period-lambda"
+  kms_key_arn          = "${aws_kms_key.default.arn}"
+  log_retention_period = 14
+  s3_bucket            = "artifact.bhavik.io"
+  s3_folder            = "lambda"
+  tags                 = "${merge(local.common_tags, var.tags)}"
+  app_version          = "1.0.2"
+
+  providers = {
+    aws = "aws.identity"
+  }
+}
+
+module "retention-period-development" {
+  source               = "./modules/cloudwatch-retention-period-lambda"
+  kms_key_arn          = "${aws_kms_key.default.arn}"
+  log_retention_period = 14
+  s3_bucket            = "artifact.bhavik.io"
+  s3_folder            = "lambda"
+  tags                 = "${merge(local.common_tags, var.tags)}"
+  app_version          = "1.0.2"
+
+  providers = {
+    aws = "aws.development"
+  }
+}
+
+module "retention-period-production" {
+  source               = "./modules/cloudwatch-retention-period-lambda"
+  kms_key_arn          = "${aws_kms_key.default.arn}"
+  log_retention_period = 14
+  s3_bucket            = "artifact.bhavik.io"
+  s3_folder            = "lambda"
+  tags                 = "${merge(local.common_tags, var.tags)}"
+  app_version          = "1.0.2"
+
+  providers = {
+    aws = "aws.production"
+  }
+}

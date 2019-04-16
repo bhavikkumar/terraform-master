@@ -14,6 +14,8 @@ data "aws_iam_policy_document" "dev_prod_read_access" {
     principals {
       type = "AWS"
       identifiers = [
+        "arn:aws:iam::${var.master_account_id}:root",
+        "arn:aws:iam::${aws_organizations_account.identity.id}:root",
         "arn:aws:iam::${aws_organizations_account.development.id}:root",
         "arn:aws:iam::${aws_organizations_account.production.id}:root"
       ]
@@ -35,6 +37,8 @@ data "aws_iam_policy_document" "dev_prod_read_access" {
     principals {
       type = "AWS"
       identifiers = [
+        "arn:aws:iam::${var.master_account_id}:root",
+        "arn:aws:iam::${aws_organizations_account.identity.id}:root",
         "arn:aws:iam::${aws_organizations_account.development.id}:root",
         "arn:aws:iam::${aws_organizations_account.production.id}:root"
       ]
