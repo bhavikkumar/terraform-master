@@ -4,7 +4,7 @@ This terraform module which creates roles which can be assumed by users from the
 
 ## Features
 The roles which are created are the following:
-- Create admin role
+- Create admin role with toggle to only have billing and read only permissions
 
 ## TODO
 - Enforce MFA on assume role, this only happens if it exists at the moment.
@@ -13,7 +13,7 @@ The roles which are created are the following:
 ```
 module "iam-assume-roles" {
   source = "./modules/iam-assume-roles"
-  master_account_id = "${var.master_account_id}"
+  account_id = "${var.account_id}"
   providers = {
     aws = "aws.operations"
   }
@@ -23,7 +23,10 @@ module "iam-assume-roles" {
 ## Inputs
 Name | Description | Type | Default | Required
 ---- | ----------- | ---- | ------- | --------
-master_account_id | The master account which users will be in to access the roles | string | - | yes
+account_id | The account from where users will be to assume roles from | string | - | yes
 administrator_default_arn | The managed ARN which will be attached to the Admin role | string | arn:aws:iam::aws:policy/AdministratorAccess | no
+billing_default_arn |  The managed ARN which will be attached to the finance group | string | `arn:aws:iam::aws:policy/job-function/Billing` | no
+enable_read_only_for_admin | If set to true then the admin role will have billing and read only permissions | `false` | no
+read_only_default_arn | The managed ARN which will be attached to groups allowed read only access | `arn:aws:iam::aws:policy/ReadOnlyAccess` | no
 
 ## Outputs

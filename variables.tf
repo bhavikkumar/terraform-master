@@ -3,11 +3,6 @@ variable "aws_default_region" {
   default = "us-east-1"
 }
 
-variable "billing_default_arn" {
-  type    = "string"
-  default = "arn:aws:iam::aws:policy/job-function/Billing"
-}
-
 variable "domain_name" {
   type = "string"
 }
@@ -23,11 +18,6 @@ variable "prefix" {
 variable "profile" {
   type    = "string"
   default = "default"
-}
-
-variable "read_only_default_arn" {
-  type    = "string"
-  default = "arn:aws:iam::aws:policy/ReadOnlyAccess"
 }
 
 variable "tags" {

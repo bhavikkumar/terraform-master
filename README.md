@@ -51,12 +51,10 @@ Once the state has been stored in S3, users have to run the following command if
 Name | Description | Type | Default | Required
 ---- | ----------- | ---- | ------- | --------
 aws_default_region | The AWS Region to create resources | string | - | yes
-billing_default_arn |  The managed ARN which will be attached to the finance group | string | `arn:aws:iam::aws:policy/job-function/Billing` | no
 domain_name | The domain name which will be used as the suffix for s3 buckets and email addresses | string | - | yes
 master_account_id | The account id which will be the root organisation | string | - | yes
 prefix | The prefix to use for resources | string | - | yes
 profile | A profile in ~/.aws/credentials which is used for terraform | string | `default` | no
-read_only_default_arn | The managed ARN which will be attached to groups allowed read only access | `arn:aws:iam::aws:policy/ReadOnlyAccess` | no
 tags | A map of tags to add to all resources | map | `{}` | no
 
 ## Outputs
