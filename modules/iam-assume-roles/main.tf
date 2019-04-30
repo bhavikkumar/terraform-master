@@ -28,6 +28,7 @@ data "aws_iam_policy_document" "assume_role" {
 
 resource "aws_iam_role" "admin_role" {
   name               = "Admin"
+  description        = "Allows administrators to perform functions in the account which holds the role"
   assume_role_policy = "${data.aws_iam_policy_document.assume_role.json}"
 }
 
@@ -45,4 +46,15 @@ resource "aws_iam_role_policy_attachment" "admin_billing" {
 resource "aws_iam_role_policy_attachment" "admin_read_only" {
   role       = "${aws_iam_role.admin_role.name}"
   policy_arn = "${var.read_only_default_arn}"
+}
+
+resource "aws_iam_role" "terraform_role" {
+  name               = "Terraform"
+  description        = "Allows Terraform full access to perform functions"
+  assume_role_policy = "${data.aws_iam_policy_document.assume_role.json}"
+}
+
+resource "aws_iam_role_policy_attachment" "terraform_admin_policy" {
+  role       = "${aws_iam_role.terraform_role.name}"
+  policy_arn = "arn:aws:iam::aws:policy/AdministratorAccess"
 }
