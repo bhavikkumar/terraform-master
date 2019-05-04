@@ -1,5 +1,5 @@
 output "artifact_bucket" {
-  value = "${aws_s3_bucket.artifact_bucket.id}"
+  value       = "${aws_s3_bucket.artifact_bucket.id}"
   description = "S3 Bucket used for artifact storage"
 }
 
@@ -61,7 +61,7 @@ output "operations_account_alias" {
 }
 
 output "organization_cloudtrail_log_name" {
-  value     = "${module.organization_cloudtrail.cloudwatch_log_group_name}"
+  value = "${module.organization_cloudtrail.cloudwatch_log_group_name}"
 }
 
 output "production_account_alias" {
@@ -72,6 +72,12 @@ output "production_account_alias" {
 output "production_account_id" {
   value     = "${aws_organizations_account.production.id}"
   sensitive = true
+}
+
+output "terraform_access_key_id" {
+  value       = "${aws_iam_access_key.terraform.id}"
+  description = "The Terraform User Access Key ID"
+  sensitive   = true
 }
 
 output "terraform_bucket_id" {
@@ -90,6 +96,12 @@ output "terraform_kms_key_arn" {
   sensitive   = true
 }
 
+output "terraform_secret_access_key" {
+  value       = "${aws_iam_access_key.terraform.secret}"
+  description = "The Terraform User Secret Access Key"
+  sensitive   = true
+}
+
 output "travis_ci_access_key_id" {
   value       = "${aws_iam_access_key.travis_ci.id}"
   description = "The Travis CI User Access Key ID"
@@ -97,7 +109,7 @@ output "travis_ci_access_key_id" {
 }
 
 output "travis_ci_secret_access_key" {
-  value     = "${aws_iam_access_key.travis_ci.secret}"
+  value       = "${aws_iam_access_key.travis_ci.secret}"
   description = "The Travis CI User Secret Access Key"
-  sensitive = true
+  sensitive   = true
 }

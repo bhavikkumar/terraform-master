@@ -131,6 +131,21 @@ data "aws_iam_policy_document" "assume_admin" {
   }
 }
 
+data "aws_iam_policy_document" "assume_terraform" {
+  statement {
+    sid    = "AllowTerraformToAssumeTerraformRole"
+    effect = "Allow"
+
+    actions = [
+      "sts:AssumeRole"
+    ]
+
+    resources = [
+      "arn:aws:iam::*:role/Terraform",
+    ]
+  }
+}
+
 data "aws_iam_policy_document" "manage_users" {
   statement {
     sid    = "AllowAdminsToManageUsers"
@@ -199,4 +214,23 @@ resource "aws_iam_group_policy_attachment" "enforce_mfa" {
   group      = "${aws_iam_group.admin.id}"
   policy_arn = "${aws_iam_policy.mfa_policy.arn}"
   provider   = "aws.identity"
+}
+
+resource "aws_iam_user" "terraform" {
+  name     = "terraform"
+  path     = "/system/"
+  tags     = "${merge(local.common_tags, var.tags)}"
+  provider = "aws.identity"
+}
+
+resource "aws_iam_user_policy" "terraform_assume_role" {
+  name     = "terraform_assume_role"
+  user     = "${aws_iam_user.terraform.name}"
+  policy   = "${data.aws_iam_policy_document.assume_terraform.json}"
+  provider = "aws.identity"
+}
+
+resource "aws_iam_access_key" "terraform" {
+  user     = "${aws_iam_user.terraform.name}"
+  provider = "aws.identity"
 }

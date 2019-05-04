@@ -1,6 +1,6 @@
 provider "aws" {
   region                      = "${var.aws_default_region}"
-  version                     = "2.5.0"
+  version                     = "2.8.0"
   profile                     = "${var.profile}"
   skip_credentials_validation = true
 }
@@ -164,15 +164,28 @@ module "iam-assume-roles-master" {
   source                     = "./modules/iam-assume-roles"
   account_id                 = "${aws_organizations_account.identity.id}"
   enable_read_only_for_admin = false
+  tags                       = "${merge(local.common_tags, var.tags)}"
 
   providers = {
     aws = "aws.master"
   }
 }
 
+module "iam-assume-roles-identity" {
+  source                     = "./modules/iam-assume-roles"
+  account_id                 = "${aws_organizations_account.identity.id}"
+  enable_read_only_for_admin = true
+  tags                       = "${merge(local.common_tags, var.tags)}"
+
+  providers = {
+    aws = "aws.identity"
+  }
+}
+
 module "iam-assume-roles-operations" {
   source     = "./modules/iam-assume-roles"
   account_id = "${aws_organizations_account.identity.id}"
+  tags       = "${merge(local.common_tags, var.tags)}"
 
   providers = {
     aws = "aws.operations"
@@ -182,6 +195,7 @@ module "iam-assume-roles-operations" {
 module "iam-assume-roles-development" {
   source     = "./modules/iam-assume-roles"
   account_id = "${aws_organizations_account.identity.id}"
+  tags       = "${merge(local.common_tags, var.tags)}"
 
   providers = {
     aws = "aws.development"
@@ -191,6 +205,7 @@ module "iam-assume-roles-development" {
 module "iam-assume-roles-production" {
   source     = "./modules/iam-assume-roles"
   account_id = "${aws_organizations_account.identity.id}"
+  tags       = "${merge(local.common_tags, var.tags)}"
 
   providers = {
     aws = "aws.production"

@@ -75,8 +75,10 @@ operations_cloudtrail_log_name | The name of the cloudtrail log for the operatio
 production_account_alias | The alias of the production account
 production_account_id | The production account id
 production_cloudtrail_log_name | The name of the cloudtrail log for the production account
+terraform_access_key_id | The Terraform User Access Key ID
 terraform_bucket_id | The name of the terraform state bucket
 terraform_dynamodb_table_name | The name of the terraform dynamodb table
 terraform_kms_key_arn | The KMS Key id used by terraform to encrypt the s3 bucket at rest
+terraform_secret_access_key | The Terraform User Secret Access Key
 travis_ci_access_key_id | The AWS Access Key ID for the Travis-CI build user
 travis_ci_secret_access_key | The AWS Secret Access Key for the Travis-CI build user

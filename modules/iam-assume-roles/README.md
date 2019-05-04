@@ -24,9 +24,11 @@ module "iam-assume-roles" {
 Name | Description | Type | Default | Required
 ---- | ----------- | ---- | ------- | --------
 account_id | The account from where users will be to assume roles from | string | - | yes
-administrator_default_arn | The managed ARN which will be attached to the Admin role | string | arn:aws:iam::aws:policy/AdministratorAccess | no
+administrator_default_arn | The managed ARN which will be attached to the Admin role | string | `arn:aws:iam::aws:policy/AdministratorAccess` | no
 billing_default_arn |  The managed ARN which will be attached to the finance group | string | `arn:aws:iam::aws:policy/job-function/Billing` | no
 enable_read_only_for_admin | If set to true then the admin role will have billing and read only permissions | `false` | no
 read_only_default_arn | The managed ARN which will be attached to groups allowed read only access | `arn:aws:iam::aws:policy/ReadOnlyAccess` | no
+tags | A map of tags to add to all resources | map | `{}` | no
+terraform_default_arn | The managed ARN which will be attached to to the Terraform role | string | `arn:aws:iam::aws:policy/AdministratorAccess` | no
 
 ## Outputs
