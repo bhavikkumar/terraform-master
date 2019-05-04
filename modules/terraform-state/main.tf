@@ -215,7 +215,6 @@ resource "aws_kms_key" "terraform" {
 resource "aws_kms_alias" "terraform" {
   name          = "alias/terraform-key"
   target_key_id = "${aws_kms_key.terraform.key_id}"
-  tags          = "${var.tags}"
 }
 
 resource "aws_s3_bucket" "terraform" {

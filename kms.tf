@@ -156,6 +156,5 @@ resource "aws_kms_key" "default" {
 resource "aws_kms_alias" "default" {
   name          = "alias/default-key"
   target_key_id = "${aws_kms_key.default.key_id}"
-  tags          = "${merge(local.common_tags, var.tags)}"
   provider      = "aws.operations"
 }
