@@ -8,7 +8,7 @@ data "aws_iam_policy_document" "default_kms_policy" {
     ]
 
     principals {
-      type = "AWS"
+      type        = "AWS"
       identifiers = [
         "arn:aws:iam::${aws_organizations_account.operations.id}:role/Admin"
       ]
@@ -20,7 +20,8 @@ data "aws_iam_policy_document" "default_kms_policy" {
     condition {
       test     = "StringEquals"
       variable = "kms:ViaService"
-      values   = ["ec2.${var.aws_default_region}.amazonaws.com"]
+      values   = [
+        "ec2.${var.aws_default_region}.amazonaws.com"]
     }
 
     condition {
@@ -80,14 +81,14 @@ data "aws_iam_policy_document" "default_kms_policy" {
     ]
 
     principals {
-      type = "AWS"
+      type        = "AWS"
       identifiers = [
         "arn:aws:iam::${aws_organizations_account.operations.id}:role/Admin",
       ]
     }
 
     principals {
-      type = "Service"
+      type        = "Service"
       identifiers = [
         "logs.${var.aws_default_region}.amazonaws.com"
       ]
@@ -107,7 +108,7 @@ data "aws_iam_policy_document" "default_kms_policy" {
     ]
 
     principals {
-      type = "AWS"
+      type        = "AWS"
       identifiers = [
         "arn:aws:iam::${aws_organizations_account.operations.id}:root",
         "arn:aws:iam::${aws_organizations_account.identity.id}:root",
@@ -133,7 +134,7 @@ data "aws_iam_policy_document" "default_kms_policy" {
     ]
 
     principals {
-      type = "AWS"
+      type        = "AWS"
       identifiers = [
         "arn:aws:iam::${aws_organizations_account.operations.id}:root",
         "arn:aws:iam::${aws_organizations_account.identity.id}:root",
@@ -155,5 +156,6 @@ resource "aws_kms_key" "default" {
 resource "aws_kms_alias" "default" {
   name          = "alias/default-key"
   target_key_id = "${aws_kms_key.default.key_id}"
+  tags          = "${merge(local.common_tags, var.tags)}"
   provider      = "aws.operations"
 }

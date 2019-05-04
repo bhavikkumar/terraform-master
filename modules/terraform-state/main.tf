@@ -1,7 +1,7 @@
 data "aws_iam_policy_document" "terraform_kms_policy" {
   statement {
-    sid     = "AllowAliasCreation"
-    effect  = "Allow"
+    sid    = "AllowAliasCreation"
+    effect = "Allow"
 
     actions = [
       "kms:CreateAlias"
@@ -20,8 +20,8 @@ data "aws_iam_policy_document" "terraform_kms_policy" {
     }
 
     condition {
-      test      = "StringEquals"
-      variable  = "kms:ViaService"
+      test     = "StringEquals"
+      variable = "kms:ViaService"
 
       values = [
         "ec2.${var.aws_region}.amazonaws.com"
@@ -29,8 +29,8 @@ data "aws_iam_policy_document" "terraform_kms_policy" {
     }
 
     condition {
-      test      = "StringEquals"
-      variable  = "kms:CallerAccount"
+      test     = "StringEquals"
+      variable = "kms:CallerAccount"
 
       values = [
         "${var.account_id}"
@@ -39,8 +39,8 @@ data "aws_iam_policy_document" "terraform_kms_policy" {
   }
   # This statement only allows terraform user to change this policy.
   statement {
-    sid     = "AllowAccessForKeyAdministrators"
-    effect  = "Allow"
+    sid    = "AllowAccessForKeyAdministrators"
+    effect = "Allow"
 
     actions = [
       "kms:Create*",
@@ -72,8 +72,8 @@ data "aws_iam_policy_document" "terraform_kms_policy" {
   }
 
   statement {
-    sid     = "AllowUsersAndTerraformToUseTheKey"
-    effect  = "Allow"
+    sid    = "AllowUsersAndTerraformToUseTheKey"
+    effect = "Allow"
 
     actions = [
       "kms:Encrypt",
@@ -99,8 +99,8 @@ data "aws_iam_policy_document" "terraform_kms_policy" {
 
 data "aws_iam_policy_document" "terraform_s3_policy" {
   statement {
-    sid     = "DenyIncorrectEncryptionHeader"
-    effect  = "Deny"
+    sid    = "DenyIncorrectEncryptionHeader"
+    effect = "Deny"
 
     actions = [
       "s3:PutObject"
@@ -119,8 +119,8 @@ data "aws_iam_policy_document" "terraform_s3_policy" {
     }
 
     condition {
-      test      = "StringNotEquals"
-      variable  = "s3:x-amz-server-side-encryption"
+      test     = "StringNotEquals"
+      variable = "s3:x-amz-server-side-encryption"
 
       values = [
         "aws:kms"
@@ -129,8 +129,8 @@ data "aws_iam_policy_document" "terraform_s3_policy" {
   }
 
   statement {
-    sid     = "DenyUnEncryptedObjectUploads"
-    effect  = "Deny"
+    sid    = "DenyUnEncryptedObjectUploads"
+    effect = "Deny"
 
     actions = [
       "s3:PutObject"
@@ -149,8 +149,8 @@ data "aws_iam_policy_document" "terraform_s3_policy" {
     }
 
     condition {
-      test      = "Null"
-      variable  = "s3:x-amz-server-side-encryption"
+      test     = "Null"
+      variable = "s3:x-amz-server-side-encryption"
 
       values = [
         "true"
@@ -159,8 +159,8 @@ data "aws_iam_policy_document" "terraform_s3_policy" {
   }
 
   statement {
-    sid     = "DenyDeleteBucket"
-    effect  = "Deny"
+    sid    = "DenyDeleteBucket"
+    effect = "Deny"
 
     actions = [
       "s3:DeleteBucket"
@@ -180,8 +180,8 @@ data "aws_iam_policy_document" "terraform_s3_policy" {
   }
 
   statement {
-    sid     = "DenyPolicyUpdateOrDelete"
-    effect  = "Deny"
+    sid    = "DenyPolicyUpdateOrDelete"
+    effect = "Deny"
 
     actions = [
       "s3:PutBucketPolicy",
@@ -215,11 +215,12 @@ resource "aws_kms_key" "terraform" {
 resource "aws_kms_alias" "terraform" {
   name          = "alias/terraform-key"
   target_key_id = "${aws_kms_key.terraform.key_id}"
+  tags          = "${var.tags}"
 }
 
 resource "aws_s3_bucket" "terraform" {
-  bucket  = "terraform.${var.domain_name}"
-  acl     = "private"
+  bucket = "terraform.${var.domain_name}"
+  acl    = "private"
 
   versioning {
     enabled = true
@@ -243,10 +244,10 @@ resource "aws_s3_bucket_policy" "encrypt_terraform_bucket" {
 }
 
 resource "aws_dynamodb_table" "terraform_state_lock" {
-  name            = "terraform-state"
-  hash_key        = "LockID"
-  read_capacity   = 1
-  write_capacity  = 1
+  name           = "terraform-state"
+  hash_key       = "LockID"
+  read_capacity  = 1
+  write_capacity = 1
 
   attribute {
     name = "LockID"

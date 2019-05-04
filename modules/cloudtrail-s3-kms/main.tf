@@ -1,7 +1,7 @@
 data "aws_iam_policy_document" "cloudtrail_kms_policy" {
   statement {
-    sid     = "AllowAliasCreation"
-    effect  = "Allow"
+    sid    = "AllowAliasCreation"
+    effect = "Allow"
 
     actions = [
       "kms:CreateAlias"
@@ -21,8 +21,8 @@ data "aws_iam_policy_document" "cloudtrail_kms_policy" {
     }
 
     condition {
-      test      = "StringEquals"
-      variable  = "kms:ViaService"
+      test     = "StringEquals"
+      variable = "kms:ViaService"
 
       values = [
         "ec2.${var.aws_region}.amazonaws.com"
@@ -30,8 +30,8 @@ data "aws_iam_policy_document" "cloudtrail_kms_policy" {
     }
 
     condition {
-      test      = "StringEquals"
-      variable  = "kms:CallerAccount"
+      test     = "StringEquals"
+      variable = "kms:CallerAccount"
 
       values = [
         "${var.operations_account_id}"
@@ -41,8 +41,8 @@ data "aws_iam_policy_document" "cloudtrail_kms_policy" {
 
   # This statement only allows terraform user to change this policy.
   statement {
-    sid     = "AllowAccessForKeyAdministrators"
-    effect  = "Allow"
+    sid    = "AllowAccessForKeyAdministrators"
+    effect = "Allow"
 
     actions = [
       "kms:Create*",
@@ -74,8 +74,8 @@ data "aws_iam_policy_document" "cloudtrail_kms_policy" {
   }
 
   statement {
-    sid     = "AllowCloudTrailToDescribeKey"
-    effect  = "Allow"
+    sid    = "AllowCloudTrailToDescribeKey"
+    effect = "Allow"
 
     actions = [
       "kms:DescribeKey"
@@ -95,8 +95,8 @@ data "aws_iam_policy_document" "cloudtrail_kms_policy" {
   }
 
   statement {
-    sid     = "AllowCloudTrailToEncryptLogs"
-    effect  = "Allow"
+    sid    = "AllowCloudTrailToEncryptLogs"
+    effect = "Allow"
 
     actions = [
       "kms:GenerateDataKey"
@@ -114,18 +114,18 @@ data "aws_iam_policy_document" "cloudtrail_kms_policy" {
       ]
     }
     condition {
-      test      = "StringLike"
-      variable  = "kms:EncryptionContext:aws:cloudtrail:arn"
+      test     = "StringLike"
+      variable = "kms:EncryptionContext:aws:cloudtrail:arn"
 
       values = [
-          "arn:aws:cloudtrail:*:${var.cloudtrail_account_id}:trail/*"
+        "arn:aws:cloudtrail:*:${var.cloudtrail_account_id}:trail/*"
       ]
     }
   }
 
   statement {
-    sid     = "AllowDecryptionOfCloudTrailLogs"
-    effect  = "Allow"
+    sid    = "AllowDecryptionOfCloudTrailLogs"
+    effect = "Allow"
 
     actions = [
       "kms:Decrypt"
@@ -143,8 +143,8 @@ data "aws_iam_policy_document" "cloudtrail_kms_policy" {
       ]
     }
     condition {
-      test      = "Null"
-      variable  = "kms:EncryptionContext:aws:cloudtrail:arn"
+      test     = "Null"
+      variable = "kms:EncryptionContext:aws:cloudtrail:arn"
 
       values = [
         "false"
@@ -153,8 +153,8 @@ data "aws_iam_policy_document" "cloudtrail_kms_policy" {
   }
 
   statement {
-    sid     = "AllowCloudWatchLogsToEncrypt"
-    effect  = "Allow"
+    sid    = "AllowCloudWatchLogsToEncrypt"
+    effect = "Allow"
 
     actions = [
       "kms:Encrypt",
@@ -181,8 +181,8 @@ data "aws_iam_policy_document" "cloudtrail_kms_policy" {
 
 data "aws_iam_policy_document" "cloudtrail_s3_policy" {
   statement {
-    sid     = "AWSCloudTrailAclCheck"
-    effect  = "Allow"
+    sid    = "AWSCloudTrailAclCheck"
+    effect = "Allow"
 
     actions = [
       "s3:GetBucketAcl"
@@ -202,8 +202,8 @@ data "aws_iam_policy_document" "cloudtrail_s3_policy" {
   }
 
   statement {
-    sid     = "AWSCloudTrailWrite"
-    effect  = "Allow"
+    sid    = "AWSCloudTrailWrite"
+    effect = "Allow"
 
     actions = [
       "s3:PutObject"
@@ -221,17 +221,17 @@ data "aws_iam_policy_document" "cloudtrail_s3_policy" {
       ]
     }
     condition {
-      test      = "StringEquals"
-      variable  = "s3:x-amz-acl"
-      values = [
+      test     = "StringEquals"
+      variable = "s3:x-amz-acl"
+      values   = [
         "bucket-owner-full-control"
       ]
     }
   }
 
   statement {
-    sid     = "DenyAllDelete"
-    effect  = "Deny"
+    sid    = "DenyAllDelete"
+    effect = "Deny"
 
     actions = [
       "s3:DeleteObjectVersionTagging",
@@ -247,7 +247,7 @@ data "aws_iam_policy_document" "cloudtrail_s3_policy" {
     ]
 
     principals {
-      type        = "AWS"
+      type = "AWS"
 
       identifiers = [
         "*"
@@ -255,8 +255,8 @@ data "aws_iam_policy_document" "cloudtrail_s3_policy" {
     }
   }
   statement {
-    sid     = "DenyPolicyUpdateOrDelete"
-    effect  = "Deny"
+    sid    = "DenyPolicyUpdateOrDelete"
+    effect = "Deny"
 
     actions = [
       "s3:PutBucketPolicy",
@@ -291,11 +291,12 @@ resource "aws_kms_key" "cloudtrail" {
 resource "aws_kms_alias" "cloudtrail" {
   name          = "alias/cloudtrail-key"
   target_key_id = "${aws_kms_key.cloudtrail.key_id}"
+  tags          = "${var.tags}"
 }
 
 resource "aws_s3_bucket" "cloudtrail" {
-  bucket  = "cloudtrail.${var.domain_name}"
-  acl     = "private"
+  bucket = "cloudtrail.${var.domain_name}"
+  acl    = "private"
 
   lifecycle_rule {
     id      = "cloudtrail_lifecycle"

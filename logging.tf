@@ -100,10 +100,10 @@ resource "aws_iam_role" "logging_role" {
 }
 
 resource "aws_iam_role_policy" "put_kinesis_events" {
-  name       = "cloudwatch-log-permissions"
-  role       = "${aws_iam_role.logging_role.name}"
-  policy     = "${data.aws_iam_policy_document.log_stream_policy.json}"
-  provider   = "aws.operations"
+  name     = "cloudwatch-log-permissions"
+  role     = "${aws_iam_role.logging_role.name}"
+  policy   = "${data.aws_iam_policy_document.log_stream_policy.json}"
+  provider = "aws.operations"
 }
 
 resource "aws_cloudwatch_log_destination" "log_destination" {
@@ -116,7 +116,7 @@ resource "aws_cloudwatch_log_destination" "log_destination" {
 resource "aws_cloudwatch_log_destination_policy" "log_destination_policy" {
   destination_name = "${aws_cloudwatch_log_destination.log_destination.name}"
   access_policy    = "${data.aws_iam_policy_document.log_destination_policy.json}"
-  provider   = "aws.operations"
+  provider         = "aws.operations"
 }
 
 module "retention-period-master" {
