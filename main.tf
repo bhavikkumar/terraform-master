@@ -163,7 +163,7 @@ resource "aws_iam_account_alias" "production" {
 module "iam-assume-roles-master" {
   source                     = "./modules/iam-assume-roles"
   account_id                 = "${aws_organizations_account.identity.id}"
-  enable_read_only_for_admin = false
+  enable_read_only_for_admin = true
   tags                       = "${merge(local.common_tags, var.tags)}"
 
   providers = {
