@@ -1,26 +1,27 @@
 provider "aws" {
-  region                      = "${var.aws_default_region}"
-  version                     = "2.8.0"
-  profile                     = "${var.profile}"
+  region                      = var.aws_default_region
+  version                     = "2.11.0"
+  profile                     = var.profile
   skip_credentials_validation = true
 }
 
 provider "aws" {
-  alias               = "master"
-  region              = "${var.aws_default_region}"
+  alias  = "master"
+  region = var.aws_default_region
   allowed_account_ids = [
-    "${var.master_account_id}"]
-  profile             = "${var.profile}"
+    var.master_account_id,
+  ]
+  profile = var.profile
 }
 
 provider "aws" {
   alias   = "identity"
-  region  = "${var.aws_default_region}"
-  profile = "${var.profile}"
+  region  = var.aws_default_region
+  profile = var.profile
 
   allowed_account_ids = [
-    "${var.master_account_id}",
-    "${aws_organizations_account.identity.id}"
+    var.master_account_id,
+    aws_organizations_account.identity.id,
   ]
 
   assume_role {
@@ -31,12 +32,12 @@ provider "aws" {
 
 provider "aws" {
   alias   = "operations"
-  region  = "${var.aws_default_region}"
-  profile = "${var.profile}"
+  region  = var.aws_default_region
+  profile = var.profile
 
   allowed_account_ids = [
-    "${var.master_account_id}",
-    "${aws_organizations_account.operations.id}"
+    var.master_account_id,
+    aws_organizations_account.operations.id,
   ]
 
   assume_role {
@@ -47,12 +48,12 @@ provider "aws" {
 
 provider "aws" {
   alias   = "development"
-  region  = "${var.aws_default_region}"
-  profile = "${var.profile}"
+  region  = var.aws_default_region
+  profile = var.profile
 
   allowed_account_ids = [
-    "${var.master_account_id}",
-    "${aws_organizations_account.development.id}"
+    var.master_account_id,
+    aws_organizations_account.development.id,
   ]
 
   assume_role {
@@ -63,18 +64,22 @@ provider "aws" {
 
 provider "aws" {
   alias   = "production"
-  region  = "${var.aws_default_region}"
-  profile = "${var.profile}"
+  region  = var.aws_default_region
+  profile = var.profile
 
   allowed_account_ids = [
-    "${var.master_account_id}",
-    "${aws_organizations_account.production.id}"
+    var.master_account_id,
+    aws_organizations_account.production.id,
   ]
 
   assume_role {
     role_arn     = "arn:aws:iam::${aws_organizations_account.production.id}:role/OrganizationAccountAccessRole"
     session_name = "terraform"
   }
+}
+
+terraform {
+  required_version = ">= 0.12"
 }
 
 terraform {
@@ -93,122 +98,125 @@ locals {
 
 module "terraform" {
   source      = "./modules/terraform-state"
-  aws_region  = "${var.aws_default_region}"
-  account_id  = "${aws_organizations_account.operations.id}"
-  domain_name = "${var.domain_name}"
-  tags        = "${merge(local.common_tags, var.tags)}"
+  aws_region  = var.aws_default_region
+  account_id  = aws_organizations_account.operations.id
+  domain_name = var.domain_name
+  tags        = merge(local.common_tags, var.tags)
 
   providers = {
-    aws = "aws.operations"
+    aws = aws.operations
   }
 }
 
 resource "aws_organizations_organization" "org" {
   aws_service_access_principals = [
-    "cloudtrail.amazonaws.com"
+    "cloudtrail.amazonaws.com",
   ]
-  feature_set                   = "ALL"
-  provider                      = "aws.master"
+  enabled_policy_types = [
+    "SERVICE_CONTROL_POLICY"
+  ]
+  feature_set = "ALL"
+  provider    = aws.master
 }
 
 resource "aws_organizations_account" "identity" {
   name     = "${var.prefix}-identity"
   email    = "4d3d4429-00b8-4916-88a6-190f4968e6fc@${var.domain_name}"
-  provider = "aws.master"
+  provider = aws.master
 }
 
 resource "aws_organizations_account" "operations" {
   name     = "${var.prefix}-operations"
   email    = "580a5d93-f5c5-46e5-84f0-140c4bb8bcaf@${var.domain_name}"
-  provider = "aws.master"
+  provider = aws.master
 }
 
 resource "aws_organizations_account" "development" {
   name     = "${var.prefix}-development"
   email    = "d9ebfd25-4f30-44c8-8c59-07f5ce7be59d@${var.domain_name}"
-  provider = "aws.master"
+  provider = aws.master
 }
 
 resource "aws_organizations_account" "production" {
   name     = "${var.prefix}-production"
   email    = "afb0997b-2275-43f1-a789-4e812f649bbb@${var.domain_name}"
-  provider = "aws.master"
+  provider = aws.master
 }
 
 resource "aws_iam_account_alias" "master" {
   account_alias = "${var.prefix}-master"
-  provider      = "aws.master"
+  provider      = aws.master
 }
 
 resource "aws_iam_account_alias" "identity" {
   account_alias = "${var.prefix}-ident"
-  provider      = "aws.identity"
+  provider      = aws.identity
 }
 
 resource "aws_iam_account_alias" "operations" {
   account_alias = "${var.prefix}-operations"
-  provider      = "aws.operations"
+  provider      = aws.operations
 }
 
 resource "aws_iam_account_alias" "development" {
   account_alias = "${var.prefix}-development"
-  provider      = "aws.development"
+  provider      = aws.development
 }
 
 resource "aws_iam_account_alias" "production" {
   account_alias = "${var.prefix}-production"
-  provider      = "aws.production"
+  provider      = aws.production
 }
 
 module "iam-assume-roles-master" {
   source                     = "./modules/iam-assume-roles"
-  account_id                 = "${aws_organizations_account.identity.id}"
+  account_id                 = aws_organizations_account.identity.id
   enable_read_only_for_admin = true
-  tags                       = "${merge(local.common_tags, var.tags)}"
+  tags                       = merge(local.common_tags, var.tags)
 
   providers = {
-    aws = "aws.master"
+    aws = aws.master
   }
 }
 
 module "iam-assume-roles-identity" {
   source                     = "./modules/iam-assume-roles"
-  account_id                 = "${aws_organizations_account.identity.id}"
+  account_id                 = aws_organizations_account.identity.id
   enable_read_only_for_admin = true
-  tags                       = "${merge(local.common_tags, var.tags)}"
+  tags                       = merge(local.common_tags, var.tags)
 
   providers = {
-    aws = "aws.identity"
+    aws = aws.identity
   }
 }
 
 module "iam-assume-roles-operations" {
   source     = "./modules/iam-assume-roles"
-  account_id = "${aws_organizations_account.identity.id}"
-  tags       = "${merge(local.common_tags, var.tags)}"
+  account_id = aws_organizations_account.identity.id
+  tags       = merge(local.common_tags, var.tags)
 
   providers = {
-    aws = "aws.operations"
+    aws = aws.operations
   }
 }
 
 module "iam-assume-roles-development" {
   source     = "./modules/iam-assume-roles"
-  account_id = "${aws_organizations_account.identity.id}"
-  tags       = "${merge(local.common_tags, var.tags)}"
+  account_id = aws_organizations_account.identity.id
+  tags       = merge(local.common_tags, var.tags)
 
   providers = {
-    aws = "aws.development"
+    aws = aws.development
   }
 }
 
 module "iam-assume-roles-production" {
   source     = "./modules/iam-assume-roles"
-  account_id = "${aws_organizations_account.identity.id}"
-  tags       = "${merge(local.common_tags, var.tags)}"
+  account_id = aws_organizations_account.identity.id
+  tags       = merge(local.common_tags, var.tags)
 
   providers = {
-    aws = "aws.production"
+    aws = aws.production
   }
 }
 
@@ -216,7 +224,7 @@ resource "aws_organizations_policy" "scp-policy" {
   name        = "ProtectAccounts"
   description = "Deny anyone from doing destructive actions"
 
-  content  = <<CONTENT
+  content = <<CONTENT
 {
   "Version": "2012-10-17",
   "Statement": [
@@ -233,5 +241,8 @@ resource "aws_organizations_policy" "scp-policy" {
   ]
 }
 CONTENT
-  provider = "aws.master"
+
+
+  provider = aws.master
 }
+

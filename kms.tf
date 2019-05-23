@@ -4,24 +4,25 @@ data "aws_iam_policy_document" "default_kms_policy" {
     effect = "Allow"
 
     actions = [
-      "kms:CreateAlias"
+      "kms:CreateAlias",
     ]
 
     principals {
-      type        = "AWS"
+      type = "AWS"
       identifiers = [
-        "arn:aws:iam::${aws_organizations_account.operations.id}:role/Admin"
+        "arn:aws:iam::${aws_organizations_account.operations.id}:role/Admin",
       ]
     }
     resources = [
-      "*"
+      "*",
     ]
 
     condition {
       test     = "StringEquals"
       variable = "kms:ViaService"
-      values   = [
-        "ec2.${var.aws_default_region}.amazonaws.com"]
+      values = [
+        "ec2.${var.aws_default_region}.amazonaws.com",
+      ]
     }
 
     condition {
@@ -29,7 +30,7 @@ data "aws_iam_policy_document" "default_kms_policy" {
       variable = "kms:CallerAccount"
 
       values = [
-        "${aws_organizations_account.operations.id}"
+        aws_organizations_account.operations.id,
       ]
     }
   }
@@ -49,18 +50,18 @@ data "aws_iam_policy_document" "default_kms_policy" {
       "kms:Get*",
       "kms:Delete*",
       "kms:TagResource",
-      "kms:UntagResource"
+      "kms:UntagResource",
     ]
 
     resources = [
-      "*"
+      "*",
     ]
 
     principals {
       type = "AWS"
 
       identifiers = [
-        "arn:aws:iam::${aws_organizations_account.operations.id}:role/Admin"
+        "arn:aws:iam::${aws_organizations_account.operations.id}:role/Admin",
       ]
     }
   }
@@ -73,24 +74,24 @@ data "aws_iam_policy_document" "default_kms_policy" {
       "kms:Decrypt",
       "kms:ReEncrypt*",
       "kms:GenerateDataKey",
-      "kms:DescribeKey"
+      "kms:DescribeKey",
     ]
 
     resources = [
-      "*"
+      "*",
     ]
 
     principals {
-      type        = "AWS"
+      type = "AWS"
       identifiers = [
         "arn:aws:iam::${aws_organizations_account.operations.id}:role/Admin",
       ]
     }
 
     principals {
-      type        = "Service"
+      type = "Service"
       identifiers = [
-        "logs.${var.aws_default_region}.amazonaws.com"
+        "logs.${var.aws_default_region}.amazonaws.com",
       ]
     }
   }
@@ -100,21 +101,21 @@ data "aws_iam_policy_document" "default_kms_policy" {
     effect = "Allow"
 
     actions = [
-      "kms:*"
+      "kms:*",
     ]
 
     resources = [
-      "*"
+      "*",
     ]
 
     principals {
-      type        = "AWS"
+      type = "AWS"
       identifiers = [
         "arn:aws:iam::${aws_organizations_account.operations.id}:root",
         "arn:aws:iam::${aws_organizations_account.identity.id}:root",
         "arn:aws:iam::${var.master_account_id}:root",
         "arn:aws:iam::${aws_organizations_account.development.id}:root",
-        "arn:aws:iam::${aws_organizations_account.production.id}:root"
+        "arn:aws:iam::${aws_organizations_account.production.id}:root",
       ]
     }
   }
@@ -126,21 +127,21 @@ data "aws_iam_policy_document" "default_kms_policy" {
     actions = [
       "kms:CreateGrant",
       "kms:ListGrants",
-      "kms:RevokeGrant"
+      "kms:RevokeGrant",
     ]
 
     resources = [
-      "*"
+      "*",
     ]
 
     principals {
-      type        = "AWS"
+      type = "AWS"
       identifiers = [
         "arn:aws:iam::${aws_organizations_account.operations.id}:root",
         "arn:aws:iam::${aws_organizations_account.identity.id}:root",
         "arn:aws:iam::${var.master_account_id}:root",
         "arn:aws:iam::${aws_organizations_account.development.id}:root",
-        "arn:aws:iam::${aws_organizations_account.production.id}:root"
+        "arn:aws:iam::${aws_organizations_account.production.id}:root",
       ]
     }
   }
@@ -148,13 +149,14 @@ data "aws_iam_policy_document" "default_kms_policy" {
 
 resource "aws_kms_key" "default" {
   description = "The default KMS Key used for all services"
-  policy      = "${data.aws_iam_policy_document.default_kms_policy.json}"
-  tags        = "${merge(local.common_tags, var.tags)}"
-  provider    = "aws.operations"
+  policy      = data.aws_iam_policy_document.default_kms_policy.json
+  tags        = merge(local.common_tags, var.tags)
+  provider    = aws.operations
 }
 
 resource "aws_kms_alias" "default" {
   name          = "alias/default-key"
-  target_key_id = "${aws_kms_key.default.key_id}"
-  provider      = "aws.operations"
+  target_key_id = aws_kms_key.default.key_id
+  provider      = aws.operations
 }
+

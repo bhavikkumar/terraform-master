@@ -10,11 +10,11 @@ data "aws_iam_policy_document" "mfa" {
       "iam:ListUsers",
       "iam:ListVirtualMFADevices",
       "iam:GetAccountPasswordPolicy",
-      "iam:GetAccountSummary"
+      "iam:GetAccountSummary",
     ]
 
     resources = [
-      "*"
+      "*",
     ]
   }
 
@@ -40,11 +40,11 @@ data "aws_iam_policy_document" "mfa" {
       "iam:GetSSHPublicKey",
       "iam:DeleteSSHPublicKey",
       "iam:UpdateSSHPublicKey",
-      "iam:UploadSSHPublicKey"
+      "iam:UploadSSHPublicKey",
     ]
 
     resources = [
-      "arn:aws:iam::${aws_organizations_account.identity.id}:user/$${aws:username}"
+      "arn:aws:iam::${aws_organizations_account.identity.id}:user/$${aws:username}",
     ]
   }
 
@@ -57,12 +57,12 @@ data "aws_iam_policy_document" "mfa" {
       "iam:DeleteVirtualMFADevice",
       "iam:EnableMFADevice",
       "iam:ListMFADevices",
-      "iam:ResyncMFADevice"
+      "iam:ResyncMFADevice",
     ]
 
     resources = [
       "arn:aws:iam::${aws_organizations_account.identity.id}:mfa/$${aws:username}",
-      "arn:aws:iam::${aws_organizations_account.identity.id}:user/$${aws:username}"
+      "arn:aws:iam::${aws_organizations_account.identity.id}:user/$${aws:username}",
     ]
   }
 
@@ -71,12 +71,12 @@ data "aws_iam_policy_document" "mfa" {
     effect = "Allow"
 
     actions = [
-      "iam:DeactivateMFADevice"
+      "iam:DeactivateMFADevice",
     ]
 
     resources = [
       "arn:aws:iam::${aws_organizations_account.identity.id}:mfa/$${aws:username}",
-      "arn:aws:iam::${aws_organizations_account.identity.id}:user/$${aws:username}"
+      "arn:aws:iam::${aws_organizations_account.identity.id}:user/$${aws:username}",
     ]
   }
 
@@ -98,11 +98,11 @@ data "aws_iam_policy_document" "mfa" {
       "iam:ListMFADevices",
       "iam:GetAccountSummary",
       "sts:GetSessionToken",
-      "iam:CreateLoginProfile"
+      "iam:CreateLoginProfile",
     ]
 
     not_resources = [
-      "*"
+      "*",
     ]
 
     condition {
@@ -110,7 +110,7 @@ data "aws_iam_policy_document" "mfa" {
       variable = "aws:MultiFactorAuthPresent"
 
       values = [
-        "false"
+        "false",
       ]
     }
   }
@@ -122,7 +122,7 @@ data "aws_iam_policy_document" "assume_admin" {
     effect = "Allow"
 
     actions = [
-      "sts:AssumeRole"
+      "sts:AssumeRole",
     ]
 
     resources = [
@@ -137,7 +137,7 @@ data "aws_iam_policy_document" "assume_terraform" {
     effect = "Allow"
 
     actions = [
-      "sts:AssumeRole"
+      "sts:AssumeRole",
     ]
 
     resources = [
@@ -166,7 +166,7 @@ data "aws_iam_policy_document" "manage_users" {
     ]
 
     resources = [
-      "*"
+      "*",
     ]
   }
 }
@@ -178,59 +178,60 @@ resource "aws_iam_account_password_policy" "strict" {
   require_uppercase_characters   = true
   require_symbols                = true
   allow_users_to_change_password = true
-  password_reuse_prevention      = true
+  password_reuse_prevention      = 1
   max_password_age               = 0
-  provider                       = "aws.identity"
+  provider                       = aws.identity
 }
 
 resource "aws_iam_policy" "mfa_policy" {
   name        = "EnforceMFA"
   path        = "/"
   description = "Policy which enforces MFA while allowing users to manage MFA devices"
-  policy      = "${data.aws_iam_policy_document.mfa.json}"
-  provider    = "aws.identity"
+  policy      = data.aws_iam_policy_document.mfa.json
+  provider    = aws.identity
 }
 
 resource "aws_iam_group" "admin" {
   name     = "Admin"
-  provider = "aws.identity"
+  provider = aws.identity
 }
 
 resource "aws_iam_group_policy" "admin_assume_role" {
   name     = "admin-assume-role"
-  group    = "${aws_iam_group.admin.id}"
-  policy   = "${data.aws_iam_policy_document.assume_admin.json}"
-  provider = "aws.identity"
+  group    = aws_iam_group.admin.id
+  policy   = data.aws_iam_policy_document.assume_admin.json
+  provider = aws.identity
 }
 
 resource "aws_iam_group_policy" "manage_users" {
   name     = "admin-can-manager-users"
-  group    = "${aws_iam_group.admin.id}"
-  policy   = "${data.aws_iam_policy_document.manage_users.json}"
-  provider = "aws.identity"
+  group    = aws_iam_group.admin.id
+  policy   = data.aws_iam_policy_document.manage_users.json
+  provider = aws.identity
 }
 
 resource "aws_iam_group_policy_attachment" "enforce_mfa" {
-  group      = "${aws_iam_group.admin.id}"
-  policy_arn = "${aws_iam_policy.mfa_policy.arn}"
-  provider   = "aws.identity"
+  group      = aws_iam_group.admin.id
+  policy_arn = aws_iam_policy.mfa_policy.arn
+  provider   = aws.identity
 }
 
 resource "aws_iam_user" "terraform" {
   name     = "terraform"
   path     = "/system/"
-  tags     = "${merge(local.common_tags, var.tags)}"
-  provider = "aws.identity"
+  tags     = merge(local.common_tags, var.tags)
+  provider = aws.identity
 }
 
 resource "aws_iam_user_policy" "terraform_assume_role" {
   name     = "terraform_assume_role"
-  user     = "${aws_iam_user.terraform.name}"
-  policy   = "${data.aws_iam_policy_document.assume_terraform.json}"
-  provider = "aws.identity"
+  user     = aws_iam_user.terraform.name
+  policy   = data.aws_iam_policy_document.assume_terraform.json
+  provider = aws.identity
 }
 
 resource "aws_iam_access_key" "terraform" {
-  user     = "${aws_iam_user.terraform.name}"
-  provider = "aws.identity"
+  user     = aws_iam_user.terraform.name
+  provider = aws.identity
 }
+

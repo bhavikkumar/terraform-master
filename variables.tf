@@ -1,27 +1,28 @@
 variable "aws_default_region" {
-  type    = "string"
+  type    = string
   default = "us-east-1"
 }
 
 variable "domain_name" {
-  type = "string"
+  type = string
 }
 
 variable "master_account_id" {
-  type = "string"
+  type = string
 }
 
 variable "prefix" {
-  type = "string"
+  type = string
 }
 
 variable "profile" {
-  type    = "string"
+  type    = string
   default = "default"
 }
 
 variable "tags" {
-  type        = "map"
+  type        = map(string)
   description = "A map of tags to add to all resources"
   default     = {}
 }
+
