@@ -1,6 +1,26 @@
+terraform {
+  required_version = ">= 0.12.0"
+
+  backend "s3" {
+    key     = "common/master"
+    encrypt = true
+  }
+
+  required_providers {
+    aws = ">= 2.49.0"
+  }
+}
+
+locals {
+  common_tags = {
+    Owner       = "global"
+    Environment = "production"
+  }
+}
+
 provider "aws" {
   region                      = var.aws_default_region
-  version                     = "2.11.0"
+  version                     = "2.49.0"
   profile                     = var.profile
   skip_credentials_validation = true
 }
@@ -75,24 +95,6 @@ provider "aws" {
   assume_role {
     role_arn     = "arn:aws:iam::${aws_organizations_account.production.id}:role/OrganizationAccountAccessRole"
     session_name = "terraform"
-  }
-}
-
-terraform {
-  required_version = ">= 0.12"
-}
-
-terraform {
-  backend "s3" {
-    key     = "common/master"
-    encrypt = true
-  }
-}
-
-locals {
-  common_tags = {
-    Owner       = "global"
-    Environment = "production"
   }
 }
 
