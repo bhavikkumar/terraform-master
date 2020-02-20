@@ -1,21 +1,21 @@
 variable "aws_region" {
-  type = "string"
+  type = string
 }
 
 variable "cloudtrail_account_id" {
-  type = "string"
+  type = string
 }
 
 variable "domain_name" {
-  type = "string"
+  type = string
 }
 
 variable "operations_account_id" {
-  type = "string"
+  type = string
 }
 
 variable "tags" {
-  type        = "map"
+  type        = map(string)
   description = "A map of tags to add to all resources"
   default     = {}
 }

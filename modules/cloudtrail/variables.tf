@@ -1,10 +1,10 @@
 variable "cloudtrail_kms_key" {
-  type        = "string"
+  type        = string
   description = "The ARN of the KMS Key for CloudTrail"
 }
 
 variable "cloudtrail_name" {
-  type        = "string"
+  type        = string
   description = "The name of the trail"
   default     = "cloudtrail"
 }
@@ -20,12 +20,12 @@ variable "is_organization_trail" {
 }
 
 variable "s3_bucket" {
-  type        = "string"
+  type        = string
   description = "The s3 bucket where cloudtrail logs will be stored"
 }
 
 variable "tags" {
-  type        = "map"
+  type        = map(string)
   description = "A map of tags to add to all resources"
   default     = {}
 }

@@ -33,7 +33,7 @@ data "aws_iam_policy_document" "terraform_kms_policy" {
       variable = "kms:CallerAccount"
 
       values = [
-        "${var.account_id}"
+        var.account_id
       ]
     }
   }
@@ -209,13 +209,13 @@ data "aws_iam_policy_document" "terraform_s3_policy" {
 
 resource "aws_kms_key" "terraform" {
   description = "KMS Key used by Terraform"
-  policy      = "${data.aws_iam_policy_document.terraform_kms_policy.json}"
-  tags        = "${var.tags}"
+  policy      = data.aws_iam_policy_document.terraform_kms_policy.json
+  tags        = var.tags
 }
 
 resource "aws_kms_alias" "terraform" {
   name          = "alias/terraform-key"
-  target_key_id = "${aws_kms_key.terraform.key_id}"
+  target_key_id = aws_kms_key.terraform.key_id
 }
 
 resource "aws_s3_bucket" "terraform" {
@@ -230,17 +230,17 @@ resource "aws_s3_bucket" "terraform" {
     rule {
       apply_server_side_encryption_by_default {
         sse_algorithm     = "aws:kms"
-        kms_master_key_id = "${aws_kms_key.terraform.arn}"
+        kms_master_key_id = aws_kms_key.terraform.arn
       }
     }
   }
 
-  tags = "${var.tags}"
+  tags = var.tags
 }
 
 resource "aws_s3_bucket_policy" "encrypt_terraform_bucket" {
-  bucket = "${aws_s3_bucket.terraform.id}"
-  policy = "${data.aws_iam_policy_document.terraform_s3_policy.json}"
+  bucket = aws_s3_bucket.terraform.id
+  policy = data.aws_iam_policy_document.terraform_s3_policy.json
 }
 
 resource "aws_dynamodb_table" "terraform_state_lock" {
@@ -254,5 +254,5 @@ resource "aws_dynamodb_table" "terraform_state_lock" {
     type = "S"
   }
 
-  tags = "${var.tags}"
+  tags = var.tags
 }

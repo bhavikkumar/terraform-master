@@ -34,7 +34,7 @@ data "aws_iam_policy_document" "cloudtrail_kms_policy" {
       variable = "kms:CallerAccount"
 
       values = [
-        "${var.operations_account_id}"
+        var.operations_account_id
       ]
     }
   }
@@ -284,13 +284,13 @@ data "aws_iam_policy_document" "cloudtrail_s3_policy" {
 
 resource "aws_kms_key" "cloudtrail" {
   description = "KMS Key used by all of CloudTrail logs"
-  policy      = "${data.aws_iam_policy_document.cloudtrail_kms_policy.json}"
-  tags        = "${var.tags}"
+  policy      = data.aws_iam_policy_document.cloudtrail_kms_policy.json
+  tags        = var.tags
 }
 
 resource "aws_kms_alias" "cloudtrail" {
   name          = "alias/cloudtrail-key"
-  target_key_id = "${aws_kms_key.cloudtrail.key_id}"
+  target_key_id = aws_kms_key.cloudtrail.key_id
 }
 
 resource "aws_s3_bucket" "cloudtrail" {
@@ -320,15 +320,15 @@ resource "aws_s3_bucket" "cloudtrail" {
     rule {
       apply_server_side_encryption_by_default {
         sse_algorithm     = "aws:kms"
-        kms_master_key_id = "${aws_kms_key.cloudtrail.arn}"
+        kms_master_key_id = aws_kms_key.cloudtrail.arn
       }
     }
   }
 
-  tags = "${var.tags}"
+  tags = var.tags
 }
 
 resource "aws_s3_bucket_policy" "encrypt_cloudtrail_bucket" {
-  bucket = "${aws_s3_bucket.cloudtrail.id}"
-  policy = "${data.aws_iam_policy_document.cloudtrail_s3_policy.json}"
+  bucket = aws_s3_bucket.cloudtrail.id
+  policy = data.aws_iam_policy_document.cloudtrail_s3_policy.json
 }
