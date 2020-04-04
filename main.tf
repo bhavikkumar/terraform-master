@@ -110,17 +110,6 @@ module "terraform" {
   }
 }
 
-resource "aws_organizations_organization" "org" {
-  aws_service_access_principals = [
-    "cloudtrail.amazonaws.com",
-  ]
-  enabled_policy_types = [
-    "SERVICE_CONTROL_POLICY"
-  ]
-  feature_set = "ALL"
-  provider    = aws.master
-}
-
 resource "aws_organizations_account" "identity" {
   name     = "${var.prefix}-identity"
   email    = "4d3d4429-00b8-4916-88a6-190f4968e6fc@${var.domain_name}"
@@ -220,31 +209,5 @@ module "iam-assume-roles-production" {
   providers = {
     aws = aws.production
   }
-}
-
-resource "aws_organizations_policy" "scp-policy" {
-  name        = "ProtectAccounts"
-  description = "Deny anyone from doing destructive actions"
-
-  content = <<CONTENT
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Effect": "Deny",
-      "Action": [
-        "cloudtrail:StopLogging",
-        "cloudtrail:UpdateTrail",
-        "cloudtrail:DeleteTrail",
-        "cloudtrail:PutEventSelectors"
-      ],
-      "Resource": "*"
-    }
-  ]
-}
-CONTENT
-
-
-  provider = aws.master
 }
 
