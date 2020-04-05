@@ -72,17 +72,17 @@ output "terraform_access_key_id" {
 }
 
 output "terraform_bucket_id" {
-  value       = module.terraform.s3_bucket
+  value       = aws_s3_bucket.terraform.id
   description = "Terraform bucket ID"
 }
 
 output "terraform_dynamodb_table_name" {
-  value       = module.terraform.dynamodb_table
+  value       = aws_dynamodb_table.terraform_state_lock.id
   description = "Terraform Lock Table Name"
 }
 
 output "terraform_kms_key_arn" {
-  value       = module.terraform.kms_key_arn
+  value       = aws_kms_key.terraform.arn
   description = "Terraform KMS Key ARN"
   sensitive   = true
 }

@@ -98,18 +98,6 @@ provider "aws" {
   }
 }
 
-module "terraform" {
-  source      = "./modules/terraform-state"
-  aws_region  = var.aws_default_region
-  account_id  = aws_organizations_account.operations.id
-  domain_name = var.domain_name
-  tags        = merge(local.common_tags, var.tags)
-
-  providers = {
-    aws = aws.operations
-  }
-}
-
 resource "aws_iam_account_alias" "master" {
   account_alias = "${var.account_prefix}-master"
   provider      = aws.master
