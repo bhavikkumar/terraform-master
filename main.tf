@@ -26,12 +26,12 @@ provider "aws" {
 }
 
 provider "aws" {
-  alias  = "master"
-  region = var.aws_default_region
+  alias               = "master"
+  region              = var.aws_default_region
   allowed_account_ids = [
     var.master_account_id,
   ]
-  profile = var.profile
+  profile             = var.profile
 }
 
 provider "aws" {
