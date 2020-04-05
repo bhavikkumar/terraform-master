@@ -55,10 +55,6 @@ output "operations_account_alias" {
   sensitive = true
 }
 
-output "organization_cloudtrail_log_name" {
-  value = module.organization_cloudtrail.cloudwatch_log_group_name
-}
-
 output "production_account_alias" {
   value     = aws_iam_account_alias.production.account_alias
   sensitive = true
