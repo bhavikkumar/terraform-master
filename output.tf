@@ -1,5 +1,5 @@
 output "cloudtrail_bucket_id" {
-  value       = module.cloudtrail-s3-kms.s3_bucket
+  value       = aws_s3_bucket.cloudtrail.id
   description = "CloudTrail bucket ID"
   sensitive   = true
 }
