@@ -1,6 +1,7 @@
 resource "aws_organizations_organization" "org" {
   aws_service_access_principals = [
     "cloudtrail.amazonaws.com",
+    "tagpolicies.tag.amazonaws.com"
   ]
   enabled_policy_types          = [
     "SERVICE_CONTROL_POLICY",
@@ -35,8 +36,44 @@ CONTENT
   provider = aws.master
 }
 
+resource "aws_organizations_policy" "default_tag_policy" {
+  name        = "DefaultTags"
+  description = "The default tag policy"
+  type        = "TAG_POLICY"
+
+  content = <<CONTENT
+{
+    "tags": {
+        "Owner": {
+            "tag_key": {
+                "@@assign": "Owner"
+            },
+            "enforced_for": {
+                "@@assign": []
+            }
+        },
+        "Environment": {
+            "tag_key": {
+                "@@assign": "Environment"
+            },
+            "enforced_for": {
+                "@@assign": []
+            }
+        }
+    }
+}
+CONTENT
+
+  provider = aws.master
+}
+
 resource "aws_organizations_policy_attachment" "deny-cloudtrail-modification" {
   policy_id = aws_organizations_policy.cloudtrail-policy.id
+  target_id = aws_organizations_organization.org.roots[0].id
+}
+
+resource "aws_organizations_policy_attachment" "enforce_default_tags" {
+  policy_id = aws_organizations_policy.default_tag_policy.id
   target_id = aws_organizations_organization.org.roots[0].id
 }
 
@@ -63,15 +100,15 @@ resource "aws_organizations_account" "operations" {
 }
 
 resource "aws_organizations_account" "development" {
-  name     = "${var.account_prefix}-development"
-  email    = "d9ebfd25-4f30-44c8-8c59-07f5ce7be59d@${var.domain_name}"
+  name      = "${var.account_prefix}-development"
+  email     = "d9ebfd25-4f30-44c8-8c59-07f5ce7be59d@${var.domain_name}"
   parent_id = aws_organizations_organizational_unit.development.id
-  provider = aws.master
+  provider  = aws.master
 }
 
 resource "aws_organizations_account" "production" {
-  name     = "${var.account_prefix}-production"
-  email    = "afb0997b-2275-43f1-a789-4e812f649bbb@${var.domain_name}"
+  name      = "${var.account_prefix}-production"
+  email     = "afb0997b-2275-43f1-a789-4e812f649bbb@${var.domain_name}"
   parent_id = aws_organizations_organizational_unit.production.id
-  provider = aws.master
+  provider  = aws.master
 }
