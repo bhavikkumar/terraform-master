@@ -36,9 +36,9 @@ CONTENT
   provider = aws.master
 }
 
-resource "aws_organizations_policy" "default-tag-policy" {
+resource "aws_organizations_policy" "default_tag_policy" {
   name        = "DefaultTags"
-  description = "Enforces the default tag policy"
+  description = "The default tag policy"
   type        = "TAG_POLICY"
 
   content = <<CONTENT
@@ -69,6 +69,11 @@ CONTENT
 
 resource "aws_organizations_policy_attachment" "deny-cloudtrail-modification" {
   policy_id = aws_organizations_policy.cloudtrail-policy.id
+  target_id = aws_organizations_organization.org.roots[0].id
+}
+
+resource "aws_organizations_policy_attachment" "enforce_default_tags" {
+  policy_id = aws_organizations_policy.default_tag_policy.id
   target_id = aws_organizations_organization.org.roots[0].id
 }
 
