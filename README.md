@@ -53,7 +53,7 @@ Name | Description | Type | Default | Required
 aws_default_region | The AWS Region to create resources | string | - | yes
 domain_name | The domain name which will be used as the suffix for s3 buckets and email addresses | string | - | yes
 master_account_id | The account id which will be the root organisation | string | - | yes
-prefix | The prefix to use for resources | string | - | yes
+account_prefix | The prefix to use for account aliases | string | - | yes
 profile | A profile in ~/.aws/credentials which is used for terraform | string | `default` | no
 tags | A map of tags to add to all resources | map | `{}` | no
 

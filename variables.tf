@@ -11,7 +11,7 @@ variable "master_account_id" {
   type = string
 }
 
-variable "prefix" {
+variable "account_prefix" {
   type = string
 }
 

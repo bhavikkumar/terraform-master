@@ -20,7 +20,7 @@ locals {
 
 provider "aws" {
   region                      = var.aws_default_region
-  version                     = "2.49.0"
+  version                     = "2.56.0"
   profile                     = var.profile
   skip_credentials_validation = true
 }
@@ -98,64 +98,28 @@ provider "aws" {
   }
 }
 
-module "terraform" {
-  source      = "./modules/terraform-state"
-  aws_region  = var.aws_default_region
-  account_id  = aws_organizations_account.operations.id
-  domain_name = var.domain_name
-  tags        = merge(local.common_tags, var.tags)
-
-  providers = {
-    aws = aws.operations
-  }
-}
-
-resource "aws_organizations_account" "identity" {
-  name     = "${var.prefix}-identity"
-  email    = "4d3d4429-00b8-4916-88a6-190f4968e6fc@${var.domain_name}"
-  provider = aws.master
-}
-
-resource "aws_organizations_account" "operations" {
-  name     = "${var.prefix}-operations"
-  email    = "580a5d93-f5c5-46e5-84f0-140c4bb8bcaf@${var.domain_name}"
-  provider = aws.master
-}
-
-resource "aws_organizations_account" "development" {
-  name     = "${var.prefix}-development"
-  email    = "d9ebfd25-4f30-44c8-8c59-07f5ce7be59d@${var.domain_name}"
-  provider = aws.master
-}
-
-resource "aws_organizations_account" "production" {
-  name     = "${var.prefix}-production"
-  email    = "afb0997b-2275-43f1-a789-4e812f649bbb@${var.domain_name}"
-  provider = aws.master
-}
-
 resource "aws_iam_account_alias" "master" {
-  account_alias = "${var.prefix}-master"
+  account_alias = "${var.account_prefix}-master"
   provider      = aws.master
 }
 
 resource "aws_iam_account_alias" "identity" {
-  account_alias = "${var.prefix}-ident"
+  account_alias = var.account_prefix
   provider      = aws.identity
 }
 
 resource "aws_iam_account_alias" "operations" {
-  account_alias = "${var.prefix}-operations"
+  account_alias = "${var.account_prefix}-operations"
   provider      = aws.operations
 }
 
 resource "aws_iam_account_alias" "development" {
-  account_alias = "${var.prefix}-development"
+  account_alias = "${var.account_prefix}-development"
   provider      = aws.development
 }
 
 resource "aws_iam_account_alias" "production" {
-  account_alias = "${var.prefix}-production"
+  account_alias = "${var.account_prefix}-production"
   provider      = aws.production
 }
 

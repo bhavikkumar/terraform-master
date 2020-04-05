@@ -15,7 +15,7 @@ data "aws_iam_policy_document" "terraform_kms_policy" {
       type = "AWS"
 
       identifiers = [
-        "arn:aws:iam::${var.account_id}:role/OrganizationAccountAccessRole"
+        "arn:aws:iam::${aws_organizations_account.operations.id}:role/OrganizationAccountAccessRole"
       ]
     }
 
@@ -24,7 +24,7 @@ data "aws_iam_policy_document" "terraform_kms_policy" {
       variable = "kms:ViaService"
 
       values = [
-        "ec2.${var.aws_region}.amazonaws.com"
+        "ec2.${var.aws_default_region}.amazonaws.com"
       ]
     }
 
@@ -33,7 +33,7 @@ data "aws_iam_policy_document" "terraform_kms_policy" {
       variable = "kms:CallerAccount"
 
       values = [
-        var.account_id
+        aws_organizations_account.operations.id
       ]
     }
   }
@@ -65,8 +65,8 @@ data "aws_iam_policy_document" "terraform_kms_policy" {
       type = "AWS"
 
       identifiers = [
-        "arn:aws:iam::${var.account_id}:role/OrganizationAccountAccessRole",
-        "arn:aws:iam::${var.account_id}:role/Admin"
+        "arn:aws:iam::${aws_organizations_account.operations.id}:role/OrganizationAccountAccessRole",
+        "arn:aws:iam::${aws_organizations_account.operations.id}:role/Admin"
       ]
     }
   }
@@ -90,9 +90,9 @@ data "aws_iam_policy_document" "terraform_kms_policy" {
       type = "AWS"
 
       identifiers = [
-        "arn:aws:iam::${var.account_id}:role/OrganizationAccountAccessRole",
-        "arn:aws:iam::${var.account_id}:role/Admin",
-        "arn:aws:iam::${var.account_id}:role/Terraform",
+        "arn:aws:iam::${aws_organizations_account.operations.id}:role/OrganizationAccountAccessRole",
+        "arn:aws:iam::${aws_organizations_account.operations.id}:role/Admin",
+        "arn:aws:iam::${aws_organizations_account.operations.id}:role/Terraform",
       ]
     }
   }
@@ -197,11 +197,11 @@ data "aws_iam_policy_document" "terraform_s3_policy" {
       type = "AWS"
 
       identifiers = [
-        "arn:aws:sts::${var.account_id}:assumed-role/Admin/terraform",
-        "arn:aws:iam::${var.account_id}:role/Admin",
-        "arn:aws:sts::${var.account_id}:assumed-role/OrganizationAccountAccessRole/terraform",
-        "arn:aws:iam::${var.account_id}:role/OrganizationAccountAccessRole",
-        "arn:aws:iam::${var.account_id}:root"
+        "arn:aws:sts::${aws_organizations_account.operations.id}:assumed-role/Admin/terraform",
+        "arn:aws:iam::${aws_organizations_account.operations.id}:role/Admin",
+        "arn:aws:sts::${aws_organizations_account.operations.id}:assumed-role/OrganizationAccountAccessRole/terraform",
+        "arn:aws:iam::${aws_organizations_account.operations.id}:role/OrganizationAccountAccessRole",
+        "arn:aws:iam::${aws_organizations_account.operations.id}:root"
       ]
     }
   }
@@ -210,12 +210,14 @@ data "aws_iam_policy_document" "terraform_s3_policy" {
 resource "aws_kms_key" "terraform" {
   description = "KMS Key used by Terraform"
   policy      = data.aws_iam_policy_document.terraform_kms_policy.json
-  tags        = var.tags
+  tags        = merge(local.common_tags, var.tags)
+  provider    = aws.operations
 }
 
 resource "aws_kms_alias" "terraform" {
   name          = "alias/terraform-key"
   target_key_id = aws_kms_key.terraform.key_id
+  provider      = aws.operations
 }
 
 resource "aws_s3_bucket" "terraform" {
@@ -235,12 +237,14 @@ resource "aws_s3_bucket" "terraform" {
     }
   }
 
-  tags = var.tags
+  tags     = merge(local.common_tags, var.tags)
+  provider = aws.operations
 }
 
 resource "aws_s3_bucket_policy" "encrypt_terraform_bucket" {
-  bucket = aws_s3_bucket.terraform.id
-  policy = data.aws_iam_policy_document.terraform_s3_policy.json
+  bucket   = aws_s3_bucket.terraform.id
+  policy   = data.aws_iam_policy_document.terraform_s3_policy.json
+  provider = aws.operations
 }
 
 resource "aws_dynamodb_table" "terraform_state_lock" {
@@ -254,5 +258,6 @@ resource "aws_dynamodb_table" "terraform_state_lock" {
     type = "S"
   }
 
-  tags = var.tags
+  tags     = merge(local.common_tags, var.tags)
+  provider = aws.operations
 }
